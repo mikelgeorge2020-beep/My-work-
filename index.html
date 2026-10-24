@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>⛪ منصة خدمة اجتماع أسرة القديسة فيرينا</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-database-compat.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#6d28d9;--primary-light:#8b5cf6;--accent:#f59e0b;--success:#059669;--success-light:#10b981;--danger:#dc2626;--text:#1c1838;--text-2:#6b6880;--text-3:#9d99b5;--border:#ece7f7;--border-2:#e2dcf0;--shadow-sm:0 2px 8px rgba(109,40,217,.06);--shadow-md:0 8px 24px rgba(109,40,217,.10);--radius:18px;--radius-lg:24px;--radius-pill:999px}
+html,body{height:100%}
+body{font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;background:linear-gradient(135deg,#f5f2fb 0%,#fdf6ec 100%);background-attachment:fixed;color:var(--text);line-height:1.7;min-height:100vh}
+.hidden{display:none!important}
+h2,h3,h4{font-weight:800}
+input,select,textarea,button{font-family:inherit;font-size:15px;color:inherit}
+input,select,textarea{padding:12px 14px;border:1.5px solid var(--border-2);border-radius:12px;width:100%;background:#fbfaff;transition:.2s;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--primary-light);background:#fff;box-shadow:0 0 0 4px rgba(139,92,246,.12)}
+label{display:block;margin-bottom:12px;font-size:14px;font-weight:600;color:var(--text-2)}
+label input,label select,label textarea{margin-top:6px;font-weight:500}
+.btn{padding:11px 20px;border:none;border-radius:12px;cursor:pointer;font-weight:700;font-size:14px;transition:.2s;background:#e9e4f5;color:var(--text);display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.btn.primary{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;box-shadow:0 6px 16px rgba(109,40,217,.28)}
+.btn.green{background:linear-gradient(135deg,#059669,#10b981);color:#fff}
+.btn.amber{background:linear-gradient(135deg,#d97706,#f59e0b);color:#fff}
+.btn.red{background:linear-gradient(135deg,#dc2626,#ef4444);color:#fff}
+.btn.ghost{background:transparent;border:1.5px solid var(--border-2);color:var(--text-2)}
+.btn.small{padding:7px 14px;font-size:13px;border-radius:10px}
+.btn.block{width:100%;margin-top:10px;padding:13px}
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;position:relative;overflow:hidden;background:linear-gradient(135deg,#2e1065,#5b21b6 40%,#7c3aed)}
+.auth-wrap::before,.auth-wrap::after{content:'';position:absolute;border-radius:50%;filter:blur(80px);opacity:.45}
+.auth-wrap::before{width:500px;height:500px;background:#fbbf24;top:-150px;left:-150px}
+.auth-wrap::after{width:600px;height:600px;background:#ec4899;bottom:-200px;right:-200px}
+.auth-card{position:relative;z-index:2;background:rgba(255,255,255,.97);padding:32px 28px;border-radius:26px;width:100%;max-width:520px;box-shadow:0 30px 80px rgba(0,0,0,.35);max-height:92vh;overflow-y:auto}
+.auth-card .brand{text-align:center;font-size:22px;font-weight:900;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:6px}
+.auth-card .brand::after{content:'';display:block;width:60px;height:3px;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:3px;margin:14px auto 20px}
+.auth-card h2{font-size:17px;margin-bottom:16px;color:var(--text-2);text-align:center}
+
+/* منتقي نوع تسجيل الدخول */
+.user-type-selector{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;background:#f5f2fc;padding:6px;border-radius:16px;border:1.5px solid var(--border-2)}
+.type-option{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 12px;border-radius:12px;border:none;background:transparent;color:var(--text-2);font-weight:700;font-size:14px;cursor:pointer;transition:.25s ease}
+.type-option .type-icon{font-size:19px;line-height:1}
+.type-option.active{background:#fff;color:var(--primary);box-shadow:0 4px 14px rgba(109,40,217,.16)}
+.type-option.active[data-type="servant"]{color:#6d28d9;border-bottom:2px solid #6d28d9}
+.type-option.active[data-type="member"]{color:#059669;border-bottom:2px solid #059669}
+.role-badge-indicator{font-size:12px;color:var(--text-3);text-align:center;margin-bottom:14px;font-weight:600}
+.role-badge-indicator span{color:var(--primary);font-weight:800}
+
+.form-section-title{margin:18px 0 10px;color:var(--primary);font-size:13.5px;font-weight:800;padding-bottom:6px;border-bottom:1.5px solid var(--border)}
+.hint{font-size:13px;color:var(--text-3);margin:14px 0;text-align:center}
+.err{background:linear-gradient(135deg,#fee2e2,#fecaca);color:#991b1b;padding:12px 16px;border-radius:12px;font-size:13.5px;font-weight:600;margin-bottom:14px;border-right:4px solid var(--danger)}
+.topbar{background:linear-gradient(135deg,#2e1065,#5b21b6 50%,#7c3aed);color:#fff;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;flex-wrap:wrap;gap:10px}
+.topbar .brand{font-weight:900;font-size:18px;display:flex;align-items:center;gap:8px}
+.top-actions{display:flex;align-items:center;gap:10px}
+.chip{background:rgba(255,255,255,.15);padding:7px 14px;border-radius:var(--radius-pill);font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,.2)}
+.bell{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:18px;width:42px;height:42px;border-radius:50%;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center}
+.badge{position:absolute;top:-4px;left:-4px;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-size:11px;font-weight:800;min-width:20px;height:20px;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:0 5px}
+.tabs{display:flex;gap:10px;overflow-x:auto;padding:14px 22px;background:rgba(255,255,255,.85);border-bottom:1px solid var(--border);position:sticky;top:68px;z-index:40;scrollbar-width:none}
+.tabs button{white-space:nowrap;padding:9px 20px;border-radius:var(--radius-pill);border:1.5px solid transparent;background:#f3eeff;cursor:pointer;font-weight:700;font-size:13.5px;color:var(--text-2);transition:.2s}
+.tabs button.active{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;box-shadow:0 6px 16px rgba(109,40,217,.32)}
+.view{padding:22px;max-width:1150px;margin:0 auto}
+.card{background:#fff;border-radius:var(--radius-lg);padding:22px;margin-bottom:18px;box-shadow:var(--shadow-sm);border:1px solid var(--border);transition:.2s}
+.card:hover{box-shadow:var(--shadow-md)}
+.card h3{font-size:16px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.sec-title{font-size:17px;margin:22px 0 12px;font-weight:800;display:flex;align-items:center;gap:8px}
+.empty{color:var(--text-3);text-align:center;padding:32px 20px;font-size:14px;background:#fafaff;border-radius:14px;border:1.5px dashed var(--border-2);font-weight:600}
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;align-items:end}
+.search{max-width:260px}
+.grid-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
+.stat{border-radius:var(--radius);padding:22px 18px;text-align:center;color:#fff;position:relative;overflow:hidden;box-shadow:var(--shadow-md)}
+.stat:nth-child(1){background:linear-gradient(135deg,#7c3aed,#a78bfa)}
+.stat:nth-child(2){background:linear-gradient(135deg,#0891b2,#22d3ee)}
+.stat:nth-child(3){background:linear-gradient(135deg,#d97706,#fbbf24)}
+.stat:nth-child(4){background:linear-gradient(135deg,#059669,#10b981)}
+.stat-num{font-size:34px;font-weight:900;position:relative;z-index:1}
+.stat-lbl{font-size:13px;font-weight:600;opacity:.92;position:relative;z-index:1;margin-top:4px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#1c1838,#3a3466);color:#fff;padding:14px 22px;border-radius:14px;z-index:9999;font-weight:700;box-shadow:0 12px 32px rgba(0,0,0,.35)}
+.download-float-btn{position:fixed;bottom:20px;right:20px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:999px;padding:12px 20px;box-shadow:0 8px 24px rgba(16,185,129,0.35);font-weight:800;font-size:14px;cursor:pointer;z-index:90;display:flex;align-items:center;gap:8px;transition:0.25s}
+.download-float-btn:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(16,185,129,0.45)}
+.live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-left:6px;box-shadow:0 0 8px #10b981}
+.export-banner{background:linear-gradient(135deg,#1e1b4b,#312e81);color:#fff;padding:18px 22px;border-radius:20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;box-shadow:var(--shadow-md);border:1px solid rgba(255,255,255,0.1)}
+.export-banner .info h4{font-size:16px;font-weight:800;color:#fde047;display:flex;align-items:center;gap:8px}
+.export-banner .info p{font-size:13px;opacity:0.85;margin-top:4px}
+@media(max-width:640px){.topbar{padding:12px 14px}.tabs{top:60px;padding:10px 14px}.view{padding:14px}.download-float-btn{bottom:15px;right:15px;padding:10px 16px;font-size:13px}}
+</style>
+</head>
+<body>
+<!-- زر عائم لتحميل ملف HTML في أي لحظة -->
+<button class="download-float-btn" onclick="downloadCurrentHTML()" title="تنزيل كود المنصة كملف HTML مستقل">
+<span>📥</span> <span>تنزيل ملف HTML</span>
+</button>
+<div class="auth-wrap" id="authScreen">
+<div class="auth-card"><div class="brand">⛪ اجتماع أسرة القديسة فيرينا</div>
+<!-- تبويبات العمليات الرئيسية -->
+<div style="display:flex;background:#f3eeff;padding:4px;border-radius:14px;margin-bottom:18px;border:1.5px solid var(--border-2);gap:4px"><button id="tabBtnLogin" onclick="switchAuthMode('login')" style="flex:1;padding:8px 6px;border-radius:10px;border:none;background:#6d28d9;color:#fff;font-weight:700;font-size:13px;cursor:pointer;transition:0.2s" type="button">🔑 تسجيل الدخول</button><button id="tabBtnRegServant" onclick="switchAuthMode('regServant')" style="flex:1;padding:8px 6px;border-radius:10px;border:none;background:transparent;color:var(--text-2);font-weight:700;font-size:13px;cursor:pointer;transition:0.2s" type="button">✝️ تسجيل خادم جديد</button><button id="tabBtnRegMember" onclick="switchAuthMode('regMember')" style="flex:1;padding:8px 6px;border-radius:10px;border:none;background:transparent;color:var(--text-2);font-weight:700;font-size:13px;cursor:pointer;transition:0.2s" type="button">👥 تسجيل مخدوم جديد</button></div>
+<!-- قسم تسجيل الدخول -->
+<div id="loginBox">
+<h2 style="margin-bottom:12px">تسجيل الدخول للمنصة</h2>
+<!-- اختيار الصفة الكنسية: الأمينة / الخادم / المخدوم -->
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;background:#f8f6fc;padding:6px;border-radius:14px;border:1.5px solid var(--border-2)">
+<button class="type-option active" data-type="leader" onclick="setLoginType('leader')" style="display:flex;flex-direction:column;align-items:center;padding:8px 4px;border-radius:10px;border:none;background:#fff;color:#d97706;box-shadow:0 3px 10px rgba(109,40,217,0.12);cursor:pointer;font-weight:700;font-size:12px;gap:4px" type="button">
+<span style="font-size:22px">👑</span>
+<span>الأمينة / المشرف</span>
+</button>
+<button class="type-option" data-type="servant" onclick="setLoginType('servant')" style="display:flex;flex-direction:column;align-items:center;padding:8px 4px;border-radius:10px;border:none;background:transparent;color:var(--text-2);cursor:pointer;font-weight:700;font-size:12px;gap:4px" type="button">
+<span style="font-size:22px">🙋‍♂️</span>
+<span>الخادم</span>
+</button>
+<button class="type-option" data-type="member" onclick="setLoginType('member')" style="display:flex;flex-direction:column;align-items:center;padding:8px 4px;border-radius:10px;border:none;background:transparent;color:var(--text-2);cursor:pointer;font-weight:700;font-size:12px;gap:4px" type="button">
+<span style="font-size:22px">👤</span>
+<span>المخدوم</span>
+</button>
+</div>
+<div class="role-badge-indicator" id="roleIndicator" style="background:#faf8fe;padding:8px 12px;border-radius:10px;border:1px solid var(--border);margin-bottom:14px">تسجيل الدخول بصلاحية: <span id="roleBadgeLabel" style="color:#d97706;font-weight:800">👑 الأمينة / أمين الخدمة العام</span><div style="font-size:11.5px;color:#059669;margin-top:4px;font-weight:700">✨ تمت تعبئة بيانات حساب الأمينة (amena) تلقائياً، يمكنك الآن الضغط على دخول مباشرة</div></div>
+<div class="err" id="loginErr" style="display:none"></div>
+<form autocomplete="off" id="loginForm">
+<label>
+      اسم المستخدم أو رقم الهاتف / البريد
+      <input autocomplete="off" id="usernameInput" name="username" placeholder="اسم المستخدم الخاص بالأمينة أو البريد" required="" value="amena"/>
+</label>
+<label>
+      كلمة المرور
+      <input autocomplete="new-password" id="passwordInput" name="password" placeholder="كلمة المرور" required="" type="password" value="2805022"/>
+</label>
+<button class="btn primary block" id="submitLoginBtn" style="font-size:15px;padding:12px" type="submit">دخول الأمينة 👑</button>
+</form>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
+<button class="btn ghost" onclick="switchAuthMode('regServant')" style="font-size:12px;padding:9px 6px" type="button">➕ تسجيل خادم جديد</button>
+<button class="btn ghost" onclick="switchAuthMode('regMember')" style="font-size:12px;padding:9px 6px" type="button">➕ تسجيل مخدوم جديد</button>
+</div>
+<button class="btn green block" onclick="downloadCurrentHTML()" style="margin-top:12px">
+    📥 تنزيل كود المنصة (HTML)
+  </button>
+</div>
+<!-- قسم تسجيل خادم جديد -->
+<div id="servantRegisterBox" style="display:none">
+<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px">
+<span style="font-size:24px">✝️</span>
+<h2>تسجيل بيانات خادم جديد</h2>
+</div>
+<p style="text-align:center;font-size:12.5px;color:var(--text-3);margin-bottom:14px">سجل بياناتك في أسرة القديسة فيرينا لتفعيل حساب الخدمة ومتابعة المخدومين</p>
+<form autocomplete="off" id="servantRegisterForm">
+<div class="form-section-title">✝️ البيانات الشخصية والخدمية</div>
+<label>اسم الخادم بالكامل *<input name="servantName" placeholder="الاسم الثلاثي أو الرباعي" required=""/></label>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+<label>اسم المستخدم للخدمة *<input name="servantUsername" placeholder="اسم الدخول (إنجليزي أو عربي)" required=""/></label>
+<label>رقم الهاتف / واتساب *<input name="servantPhone" placeholder="01xxxxxxxxx" required=""/></label>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+<label>المرحلة / الخدمة المسندة *<input name="servantRole" placeholder="مثال: ثانوي / إعدادي / أمين مساعد" required=""/></label>
+<label>أب الاعتراف<input name="servantConfessor" placeholder="اسم أب الاعتراف"/></label>
+</div>
+<label>كلمة المرور *<input name="servantPassword" placeholder="كلمة مرور آمنة" required="" type="password"/></label>
+<button class="btn primary block" style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);margin-top:14px" type="submit">✅ إتمام تسجيل الخادم والبدء</button>
+</form>
+<button class="btn ghost block" onclick="switchAuthMode('login')" style="margin-top:10px">↩️ العودة لشاشة تسجيل الدخول</button>
+</div>
+<!-- قسم تسجيل مخدوم جديد -->
+<div id="memberRegisterBox" style="display:none">
+<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px">
+<span style="font-size:24px">👥</span>
+<h2>تسجيل مخدوم جديد بالأسرة</h2>
+</div>
+<p style="text-align:center;font-size:12.5px;color:var(--text-3);margin-bottom:14px">سجل بياناتك للانضمام إلى أنشطة ومسابقات وشجرة نمو أسرة القديسة فيرينا</p>
+<form autocomplete="off" id="memberRegisterForm">
+<div class="form-section-title">🔐 بيانات حساب المخدوم</div>
+<label>الاسم بالكامل *<input name="memberName" placeholder="أدخل الاسم الثلاثي" required=""/></label>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+<label>اسم المستخدم *<input name="memberUsername" placeholder="اسم الدخول" required=""/></label>
+<label>رقم الهاتف *<input name="memberPhone" placeholder="01xxxxxxxxx" required=""/></label>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+<label>المرحلة الدراسية<input name="memberGrade" placeholder="مثال: أولى ثانوي"/></label>
+<label>أب الاعتراف<input name="memberConfessor" placeholder="اسم أب الاعتراف"/></label>
+</div>
+<label>كلمة المرور *<input name="memberPassword" placeholder="كلمة المرور" required="" type="password"/></label>
+<button class="btn green block" style="margin-top:14px" type="submit">✅ إنشاء حساب المخدوم</button>
+</form>
+<button class="btn ghost block" onclick="switchAuthMode('login')" style="margin-top:10px">↩️ العودة لشاشة تسجيل الدخول</button>
+</div><script>(function() { window.switchAuthMode = function(mode) { var loginBox = document.getElementById('loginBox'); var servantBox = document.getElementById('servantRegisterBox'); var memberBox = document.getElementById('memberRegisterBox'); var tabLogin = document.getElementById('tabBtnLogin'); var tabServant = document.getElementById('tabBtnRegServant'); var tabMember = document.getElementById('tabBtnRegMember'); if(loginBox) loginBox.style.display = (mode === 'login' ? 'block' : 'none'); if(servantBox) servantBox.style.display = (mode === 'regServant' ? 'block' : 'none'); if(memberBox) memberBox.style.display = (mode === 'regMember' ? 'block' : 'none'); if(tabLogin) { tabLogin.style.background = mode === 'login' ? '#6d28d9' : 'transparent'; tabLogin.style.color = mode === 'login' ? '#fff' : 'var(--text-2)'; } if(tabServant) { tabServant.style.background = mode === 'regServant' ? '#6d28d9' : 'transparent'; tabServant.style.color = mode === 'regServant' ? '#fff' : 'var(--text-2)'; } if(tabMember) { tabMember.style.background = mode === 'regMember' ? '#6d28d9' : 'transparent'; tabMember.style.color = mode === 'regMember' ? '#fff' : 'var(--text-2)'; } }; window.setLoginType = function(type) { var buttons = document.querySelectorAll('.type-option'); buttons.forEach(function(btn) { if(btn.getAttribute('data-type') === type) { btn.classList.add('active'); btn.style.background = '#fff'; btn.style.boxShadow = '0 3px 10px rgba(109,40,217,0.18)'; btn.style.border = type === 'leader' ? '2px solid #d97706' : (type === 'servant' ? '2px solid #6d28d9' : '2px solid #059669'); btn.style.color = type === 'leader' ? '#d97706' : (type === 'servant' ? '#6d28d9' : '#059669'); } else { btn.classList.remove('active'); btn.style.background = 'transparent'; btn.style.boxShadow = 'none'; btn.style.border = 'none'; btn.style.color = 'var(--text-2)'; } }); var uInput = document.getElementById('usernameInput'); var pInput = document.getElementById('passwordInput'); var submitBtn = document.getElementById('submitLoginBtn'); var roleIndicator = document.getElementById('roleIndicator'); if(type === 'leader') { if(uInput) { uInput.value = 'amena'; uInput.placeholder = 'اسم المستخدم الخاص بالأمينة أو البريد'; } if(pInput) { pInput.value = '2805022'; pInput.placeholder = 'كلمة المرور'; } if(submitBtn) submitBtn.textContent = 'دخول الأمينة 👑'; if(roleIndicator) roleIndicator.innerHTML = 'تسجيل الدخول بصلاحية: <span id="roleBadgeLabel" style="color:#d97706;font-weight:800">👑 الأمينة / أمين الخدمة العام</span><div style="font-size:11.5px;color:#059669;margin-top:4px;font-weight:700">✨ تمت تعبئة بيانات حساب الأمينة (amena) تلقائياً، يمكنك الآن الضغط على دخول مباشرة</div>'; } else if(type === 'servant') { if(uInput) { uInput.value = ''; uInput.placeholder = 'اسم مستخدم الخادم أو البريد'; } if(pInput) { pInput.value = ''; pInput.placeholder = 'كلمة المرور'; } if(submitBtn) submitBtn.textContent = 'دخول الخادم 🙋‍♂️'; if(roleIndicator) roleIndicator.innerHTML = 'تسجيل الدخول بصلاحية: <span id="roleBadgeLabel" style="color:#6d28d9;font-weight:800">🙋‍♂️ خادم / أمين أسرة</span>'; } else if(type === 'member') { if(uInput) { uInput.value = ''; uInput.placeholder = 'اسم المخدوم أو رقم الهاتف'; } if(pInput) { pInput.value = ''; pInput.placeholder = 'كلمة المرور'; } if(submitBtn) submitBtn.textContent = 'دخول المخدوم 👤'; if(roleIndicator) roleIndicator.innerHTML = 'تسجيل الدخول بصلاحية: <span id="roleBadgeLabel" style="color:#059669;font-weight:800">👤 مخدوم في الأسرة</span>'; } }; window.setLoginType('leader'); })();</script></div>
+</div>
+<div class="hidden" id="appScreen">
+<header class="topbar">
+<div class="brand">⛪ اجتماع أسرة القديسة فيرينا <span class="live-dot"></span></div>
+<div class="top-actions">
+<!-- زر تحميل HTML مباشر في الهيدر -->
+<button class="btn small green" onclick="downloadCurrentHTML()" style="display:inline-flex;align-items:center;gap:6px">
+<span>📥</span> <span>تنزيل HTML</span>
+</button>
+<button class="bell" onclick="go('notifications')">🔔<span class="badge" id="bellBadge" style="display:none">0</span></button>
+<span class="chip" id="userChip">أمين الخدمة</span>
+<button class="btn small ghost" onclick="logout()" style="color:#fff;border-color:rgba(255,255,255,.3)">خروج</button>
+</div>
+</header>
+<nav class="tabs" id="tabs"><button class="active" onclick="go('home')">🏠 الرئيسية</button><button onclick="go('members')">👥 المخدومون</button><button onclick="go('attendance')">✅ الحضور</button><button onclick="go('points')">⭐ شجرة النمو</button><button id="tabPendingApproval" onclick="go('pending')" style="display:inline-flex;align-items:center;gap:6px">⏳ طلبات معلقة <span class="badge" id="pendingCountBadge" style="position:static;display:inline-flex">0</span></button><button onclick="go('admin')">⚙️ الإدارة والتصدير</button></nav>
+<main class="view" id="view">
+<!-- بانر التنزيل داخل الواجهة -->
+<div class="export-banner">
+<div class="info">
+<h4>⚡ تنزيل وتشغيل المنصة محلياً</h4>
+<p>يمكنك تحميل هذا الملف كاملاً بامتداد .html وتشغيله مباشرة دون إنترنت أو رفعه لأي استضافة.</p>
+</div>
+<button class="btn amber" onclick="downloadCurrentHTML()">
+<span>💾</span> <b>تحميل index.html الآن</b>
+</button>
+</div>
+<div class="grid-stats">
+<div class="stat"><div class="stat-num">0</div><div class="stat-lbl">مخدوم مسجّل</div></div>
+<div class="stat"><div class="stat-num">0</div><div class="stat-lbl">حضور اليوم</div></div>
+<div class="stat"><div class="stat-num">0%</div><div class="stat-lbl">نسبة الالتزام</div></div>
+<div class="stat"><div class="stat-num">0</div><div class="stat-lbl">نقاط الشجرة</div></div>
+</div>
+<div class="card" style="margin-top:20px;text-align:center">
+<h3>🌱 مرحباً بكم في منصة اجتماع أسرة القديسة فيرينا</h3>
+<p style="color:var(--text-2);margin-bottom:16px">تم تصفير البيانات لتبدأ الخدمة بسجلات نظيفة ومحدثة.</p>
+<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+<button class="btn primary" onclick="go('members')">➕ إضافة أول مخدوم</button>
+<button class="btn green" onclick="downloadCurrentHTML()">📥 تحميل نسخة المنصة HTML</button>
+</div>
+</div>
+<div class="card hidden" id="pendingApprovalsSection" style="margin-top:20px;border:2px solid #8b5cf6"><div class="card-head"><h3>⏳ طلبات التسجيل بانتظار الموافقة والاعتماد</h3><span class="chip" id="pendingSectionStats" style="background:#6d28d9;color:#fff">0 طلب معلق</span></div><p style="font-size:13.5px;color:var(--text-2);margin-bottom:14px">بصفتك الأمينة / الإدارة، يمكنك مراجعة واعتماد حسابات الخدام والمخدومين الجدد للسماح لهم بالدخول للمنصة فوراً.</p><div id="pendingUsersList" style="display:flex;flex-direction:column;gap:10px"><div class="empty">لا توجد طلبات تسجيل معلقة حالياً ✅</div></div></div></main>
+</div>
+<script>
+var currentLoginType = 'servant';
+
+function setLoginType(type) {
+  currentLoginType = type;
+  var buttons = document.querySelectorAll('.type-option');
+  buttons.forEach(function(btn){
+    if(btn.getAttribute('data-type') === type) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+
+  var roleIndicator = document.getElementById('roleIndicator');
+  var userChip = document.getElementById('userChip');
+  var submitBtn = document.getElementById('submitLoginBtn');
+  var uInput = document.getElementById('usernameInput');
+
+  if(type === 'servant') {
+    roleIndicator.innerHTML = 'أنت تسجل الدخول حالياً كـ: <span>خادم / أمين الخدمة</span>';
+    submitBtn.textContent = 'دخول الخادم';
+    uInput.placeholder = 'اسم مستخدم الخادم أو البريد';
+    if(userChip) userChip.textContent = 'أمين الخدمة';
+  } else {
+    roleIndicator.innerHTML = 'أنت تسجل الدخول حالياً كـ: <span>مخدوم في الأسرة</span>';
+    submitBtn.textContent = 'دخول المخدوم';
+    uInput.placeholder = 'اسم المخدوم أو رقم الهاتف';
+    if(userChip) userChip.textContent = 'مخدوم';
+  }
+}
+
+// دالة تصدير وتنزيل كود الصفحة الحالية كملف HTML جاهز
+function downloadCurrentHTML() {
+  try {
+    var htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+    var blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'index.html';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function() {
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }, 200);
+    toast('✅ تم بدء تنزيل ملف index.html بنجاح!');
+  } catch(e) {
+    alert('حدث خطأ أثناء التصدير: ' + e.message);
+  }
+}
+
+function toast(msg){
+  var t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function(){ if(t.parentNode) t.parentNode.removeChild(t); }, 3000);
+}
+
+function showLogin(){
+  document.getElementById('authScreen').classList.remove('hidden');
+  document.getElementById('appScreen').classList.add('hidden');
+  document.getElementById('loginBox').style.display = 'block';
+  document.getElementById('registerBox').style.display = 'none';
+  // التأكد من تفريغ الحقول
+  var u = document.getElementById('usernameInput');
+  var p = document.getElementById('passwordInput');
+  if(u) u.value = '';
+  if(p) p.value = '';
+}
+
+function showRegister(){
+  document.getElementById('loginBox').style.display = 'none';
+  document.getElementById('registerBox').style.display = 'block';
+}
+
+function showApp(){
+  document.getElementById('authScreen').classList.add('hidden');
+  document.getElementById('appScreen').classList.remove('hidden');
+}
+
+function logout(){
+  showLogin();
+}
+
+function go(tab){
+  var btns = document.querySelectorAll('.tabs button');
+  btns.forEach(function(b){ b.classList.remove('active'); });
+  if(window.event && window.event.target) window.event.target.classList.add('active');
+  toast('الانتقال إلى تبويب: ' + tab);
+}
+
+document.getElementById('loginForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  showApp();
+  var welcomeText = currentLoginType === 'servant' ? 'مرحباً بك يا خادم المسيح في أسرة القديسة فيرينا' : 'أهلاً بك في أسرة القديسة فيرينا';
+  toast(welcomeText);
+});
+
+document.getElementById('registerForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  toast('✅ تم تسجيل المخدوم بنجاح');
+  showLogin();
+});
+
+// التأكد من بدء الحقول فارغة تماماً
+window.addEventListener('DOMContentLoaded', function(){
+  var u = document.getElementById('usernameInput');
+  var p = document.getElementById('passwordInput');
+  if(u) u.value = '';
+  if(p) p.value = '';
+});
+</script>
+</body></html>
