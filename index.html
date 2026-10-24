@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⛪ اجتماع أسرة القديسة فيرينا - منصة الخدمة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-database-compat.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#6d28d9;--primary-light:#8b5cf6;--accent:#f59e0b;--success:#059669;--success-light:#10b981;--danger:#dc2626;--text:#1c1838;--text-2:#6b6880;--text-3:#9d99b5;--border:#ece7f7;--border-2:#e2dcf0;--shadow-sm:0 2px 8px rgba(109,40,217,.06);--shadow-md:0 8px 24px rgba(109,40,217,.10);--radius:18px;--radius-lg:24px;--radius-pill:999px}
+html,body{height:100%}
+body{font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;background:linear-gradient(135deg,#f5f2fb 0%,#fdf6ec 100%);background-attachment:fixed;color:var(--text);line-height:1.7;min-height:100vh}
+.hidden{display:none!important}
+h2,h3,h4{font-weight:800}
+input,select,textarea,button{font-family:inherit;font-size:15px;color:inherit}
+input,select,textarea{padding:12px 14px;border:1.5px solid var(--border-2);border-radius:12px;width:100%;background:#fbfaff;transition:.2s;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--primary-light);background:#fff;box-shadow:0 0 0 4px rgba(139,92,246,.12)}
+label{display:block;margin-bottom:12px;font-size:14px;font-weight:600;color:var(--text-2)}
+label input,label select,label textarea{margin-top:6px;font-weight:500}
+.btn{padding:11px 20px;border:none;border-radius:12px;cursor:pointer;font-weight:700;font-size:14px;transition:.2s;background:#e9e4f5;color:var(--text);display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.btn.primary{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;box-shadow:0 6px 16px rgba(109,40,217,.28)}
+.btn.green{background:linear-gradient(135deg,#059669,#10b981);color:#fff}
+.btn.amber{background:linear-gradient(135deg,#d97706,#f59e0b);color:#fff}
+.btn.red{background:linear-gradient(135deg,#dc2626,#ef4444);color:#fff}
+.btn.ghost{background:transparent;border:1.5px solid var(--border-2);color:var(--text-2)}
+.btn.small{padding:7px 14px;font-size:13px;border-radius:10px}
+.btn.block{width:100%;margin-top:10px;padding:13px}
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;position:relative;overflow:hidden;background:linear-gradient(135deg,#2e1065,#5b21b6 40%,#7c3aed)}
+.auth-wrap::before,.auth-wrap::after{content:'';position:absolute;border-radius:50%;filter:blur(80px);opacity:.45}
+.auth-wrap::before{width:500px;height:500px;background:#fbbf24;top:-150px;left:-150px}
+.auth-wrap::after{width:600px;height:600px;background:#ec4899;bottom:-200px;right:-200px}
+.auth-card{position:relative;z-index:2;background:rgba(255,255,255,.97);padding:32px 28px;border-radius:26px;width:100%;max-width:520px;box-shadow:0 30px 80px rgba(0,0,0,.35);max-height:92vh;overflow-y:auto}
+.auth-card .brand{text-align:center;font-size:23px;font-weight:900;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:6px}
+.auth-card .brand::after{content:'';display:block;width:60px;height:3px;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:3px;margin:14px auto 20px}
+.auth-card h2{font-size:17px;margin-bottom:16px;color:var(--text-2);text-align:center}
+.role-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
+.role-tab-btn{padding:12px 8px;border-radius:14px;border:1.5px solid var(--border-2);background:#fbfaff;cursor:pointer;font-weight:700;font-size:13px;color:var(--text-2);display:flex;flex-direction:column;align-items:center;gap:6px;transition:.2s}
+.role-tab-btn .ico{font-size:22px}
+.role-tab-btn.active{background:linear-gradient(135deg,#ede9fe,#fef3c7);border-color:var(--primary);color:var(--primary);box-shadow:0 4px 12px rgba(109,40,217,.15)}
+.amena-banner{background:#ecfdf5;border:1.5px solid #a7f3d0;color:#065f46;padding:10px 14px;border-radius:12px;font-size:13px;font-weight:600;margin-bottom:14px;text-align:center}
+.form-section-title{margin:18px 0 10px;color:var(--primary);font-size:13.5px;font-weight:800;padding-bottom:6px;border-bottom:1.5px solid var(--border)}
+.hint{font-size:13px;color:var(--text-3);margin:14px 0;text-align:center}
+.err{background:linear-gradient(135deg,#fee2e2,#fecaca);color:#991b1b;padding:12px 16px;border-radius:12px;font-size:13.5px;font-weight:600;margin-bottom:14px;border-right:4px solid var(--danger)}
+.pending-alert{background:linear-gradient(135deg,#fffbeb,#fef3c7);color:#92400e;padding:12px 16px;border-radius:12px;font-size:13.5px;font-weight:700;margin-bottom:14px;border-right:4px solid var(--accent);display:none}
+.photo-upload{display:flex;align-items:center;gap:14px;padding:14px;background:#fbfaff;border:2px dashed var(--border-2);border-radius:14px;cursor:pointer;transition:.2s;margin-top:6px}
+.photo-upload:hover{border-color:var(--primary-light);background:#f5f2fb}
+.photo-preview{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#ede9fe,#fef3c7);display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--primary);overflow:hidden;flex-shrink:0;border:2px solid #fff}
+.photo-preview img{width:100%;height:100%;object-fit:cover}
+.photo-info{flex:1}
+.photo-info b{display:block;color:var(--primary);font-size:14px;margin-bottom:2px}
+.photo-info small{color:var(--text-3);font-size:12px}
+.date-selects{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:8px;margin-top:6px}
+.avatar-sm{width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid #fff;box-shadow:0 2px 6px rgba(109,40,217,.15);vertical-align:middle}
+.avatar-placeholder{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;vertical-align:middle;border:2px solid #fff}
+.name-cell{display:flex;align-items:center;gap:10px}
+.topbar{background:linear-gradient(135deg,#2e1065,#5b21b6 50%,#7c3aed);color:#fff;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;flex-wrap:wrap;gap:10px}
+.topbar .brand{font-weight:900;font-size:18px;display:flex;align-items:center;gap:8px}
+.top-actions{display:flex;align-items:center;gap:10px}
+.chip{background:rgba(255,255,255,.15);padding:7px 14px;border-radius:var(--radius-pill);font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,.2)}
+.bell{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:18px;width:42px;height:42px;border-radius:50%;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center}
+.badge{position:absolute;top:-4px;left:-4px;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-size:11px;font-weight:800;min-width:20px;height:20px;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:0 5px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+.tabs{display:flex;gap:10px;overflow-x:auto;padding:14px 22px;background:rgba(255,255,255,.85);border-bottom:1px solid var(--border);position:sticky;top:68px;z-index:40;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{white-space:nowrap;padding:9px 20px;border-radius:var(--radius-pill);border:1.5px solid transparent;background:#f3eeff;cursor:pointer;font-weight:700;font-size:13.5px;color:var(--text-2);transition:.2s;font-family:inherit}
+.tabs button.active{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;box-shadow:0 6px 16px rgba(109,40,217,.32)}
+.view{padding:22px;max-width:1150px;margin:0 auto}
+.card{background:#fff;border-radius:var(--radius-lg);padding:22px;margin-bottom:18px;box-shadow:var(--shadow-sm);border:1px solid var(--border);transition:.2s}
+.card:hover{box-shadow:var(--shadow-md)}
+.card h3{font-size:16px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.sec-title{font-size:17px;margin:22px 0 12px;font-weight:800;display:flex;align-items:center;gap:8px}
+.empty{color:var(--text-3);text-align:center;padding:32px 20px;font-size:14px;background:#fafaff;border-radius:14px;border:1.5px dashed var(--border-2);font-weight:600}
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;align-items:end}
+.form-row button{height:46px}
+.search{max-width:260px}
+.grid-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
+.stat{border-radius:var(--radius);padding:22px 18px;text-align:center;color:#fff;position:relative;overflow:hidden;box-shadow:var(--shadow-md);transition:.25s}
+.stat:hover{transform:translateY(-4px)}
+.stat:nth-child(1){background:linear-gradient(135deg,#7c3aed,#a78bfa)}
+.stat:nth-child(2){background:linear-gradient(135deg,#0891b2,#22d3ee)}
+.stat:nth-child(3){background:linear-gradient(135deg,#d97706,#fbbf24)}
+.stat:nth-child(4){background:linear-gradient(135deg,#059669,#10b981)}
+.stat::before{content:'';position:absolute;top:-30px;left:-30px;width:120px;height:120px;background:rgba(255,255,255,.15);border-radius:50%}
+.stat-num{font-size:34px;font-weight:900;position:relative;z-index:1}
+.stat-lbl{font-size:13px;font-weight:600;opacity:.92;position:relative;z-index:1;margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:13px 12px;text-align:right;border-bottom:1px solid var(--border)}
+th{background:#faf8ff;color:var(--text-2);font-size:12.5px;font-weight:800;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fdfcff}
+.table-wrap{overflow-x:auto;max-height:520px;overflow-y:auto;border-radius:14px;border:1px solid var(--border);background:#fff}
+.att-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding:12px;background:#fafaff;border-radius:14px;border:1.5px solid var(--border-2)}
+.att-filters button{padding:8px 16px;border-radius:var(--radius-pill);border:1.5px solid var(--border-2);background:#fff;cursor:pointer;font-weight:700;font-size:13px;color:var(--text-2);font-family:inherit}
+.att-filters button.active{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;border-color:transparent}
+.att-filters button.active.present-filter{background:linear-gradient(135deg,#059669,#10b981)}
+.att-filters button.active.late-filter{background:linear-gradient(135deg,#d97706,#fbbf24)}
+.att-filters button.active.excused-filter{background:linear-gradient(135deg,#0891b2,#22d3ee)}
+.att-filters button.active.absent-filter{background:linear-gradient(135deg,#dc2626,#ef4444)}
+.att-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);gap:12px;flex-wrap:wrap}
+.att-row:last-child{border-bottom:none}
+.att-row.hidden-row{display:none}
+.att-name{font-weight:700;flex:1;min-width:140px;display:flex;align-items:center;gap:10px}
+.att-name .info{display:flex;flex-direction:column;gap:4px;flex:1}
+.att-name small{font-size:11.5px;color:var(--text-3);font-weight:500}
+.att-name .name-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.att-opts{display:flex;gap:6px;flex-wrap:wrap}
+.att-opts label{display:flex;align-items:center;gap:4px;margin:0;padding:7px 12px;border:1.5px solid var(--border-2);border-radius:var(--radius-pill);cursor:pointer;font-size:12.5px;background:#fff;font-weight:700;color:var(--text-2)}
+.att-opts input{width:auto;display:none}
+.att-opts label.on{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;border-color:transparent}
+.att-opts label.on.present{background:linear-gradient(135deg,#059669,#10b981)}
+.att-opts label.on.late{background:linear-gradient(135deg,#d97706,#fbbf24)}
+.att-opts label.on.excused{background:linear-gradient(135deg,#0891b2,#22d3ee)}
+.att-opts label.on.absent{background:linear-gradient(135deg,#dc2626,#ef4444)}
+.points-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:var(--radius-pill);font-weight:800;font-size:12px;color:#fff}
+.points-badge.green{background:linear-gradient(135deg,#059669,#10b981)}
+.points-badge.blue{background:linear-gradient(135deg,#2563eb,#3b82f6)}
+.points-badge.red{background:linear-gradient(135deg,#dc2626,#ef4444)}
+.point-action{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.point-action button{padding:16px 12px;border-radius:16px;border:none;cursor:pointer;font-weight:800;font-size:15px;color:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;font-family:inherit}
+.point-action button .big{font-size:26px}
+.point-action button .lbl{font-size:12px;opacity:.9}
+.point-action button.green-btn{background:linear-gradient(135deg,#059669,#10b981)}
+.point-action button.blue-btn{background:linear-gradient(135deg,#2563eb,#3b82f6)}
+.point-action button.red-btn{background:linear-gradient(135deg,#dc2626,#ef4444)}
+.tree-box{text-align:center;background:linear-gradient(180deg,#f5f2fb,#fdf6ec);border-radius:20px;padding:16px;border:1.5px solid var(--border)}
+.level-pill{display:inline-block;background:linear-gradient(135deg,var(--success),var(--success-light));color:#fff;padding:7px 20px;border-radius:var(--radius-pill);font-size:13px;font-weight:800}
+.big-points{font-size:52px;font-weight:900;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.1;margin-top:8px}
+.progress{height:12px;background:#ede9fe;border-radius:var(--radius-pill);overflow:hidden;margin:14px 0 10px}
+.progress>div{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:var(--radius-pill);transition:.5s}
+.notif{border-radius:16px;background:#fff;padding:16px 18px;margin-bottom:12px;box-shadow:var(--shadow-sm);border:1px solid var(--border);border-right:5px solid var(--primary-light)}
+.notif.unread{background:linear-gradient(135deg,#fffbeb,#fef3c7);border-right-color:var(--accent)}
+.notif.notif-green{border-right-color:#10b981!important}
+.notif.notif-blue{border-right-color:#3b82f6!important}
+.notif.notif-red{border-right-color:#ef4444!important}
+.notif.notif-pdf{border-right-color:#dc2626!important}
+.notif.notif-video{border-right-color:#7c3aed!important}
+.notif.notif-audio{border-right-color:#0891b2!important}
+.notif h4{font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.notif p{font-size:14px;color:var(--text-2);white-space:pre-wrap;font-weight:500}
+.notif .meta{font-size:12px;color:var(--text-3);margin-top:10px;display:flex;gap:14px;flex-wrap:wrap;font-weight:600}
+.notif .attachment{margin-top:10px;padding:10px;background:#f8f5ff;border-radius:12px;border:1px solid var(--border)}
+.notif .attachment a{color:var(--primary);font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.tag{background:linear-gradient(135deg,#ede9fe,#ddd6fe);color:var(--primary);padding:3px 12px;border-radius:var(--radius-pill);font-size:11px;font-weight:800;display:inline-block}
+.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.media-item{background:#fff;border-radius:16px;padding:16px;border:1px solid var(--border);box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:10px}
+.media-item .ico{font-size:32px;width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#ede9fe,#fef3c7);display:flex;align-items:center;justify-content:center}
+.media-item a{color:var(--primary);font-weight:700;text-decoration:none;font-size:14px}
+.media-item small{color:var(--text-3);font-size:12px;font-weight:600}
+video,iframe{width:100%;border-radius:12px;border:none}
+audio{width:100%;margin-top:8px}
+.perms-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:12px 0}
+.perm-item{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#fbfaff;border:1.5px solid var(--border-2);border-radius:12px;cursor:pointer;font-weight:600;font-size:13.5px}
+.perm-item.checked{background:linear-gradient(135deg,#f3eeff,#fef3c7);border-color:var(--primary-light);color:var(--primary)}
+.perm-item input{width:auto;margin:0}
+.perm-badge{display:inline-block;background:#e0e7ff;color:#3730a3;padding:2px 8px;border-radius:8px;font-size:11px;font-weight:700;margin:2px}
+.role-select{padding:8px 12px;border-radius:10px;border:1.5px solid var(--border-2);background:#fbfaff;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;width:auto;min-width:150px}
+.live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-left:6px;box-shadow:0 0 8px #10b981;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(28,24,56,.6);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal-box{background:#fff;border-radius:22px;padding:26px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.modal-box h3{color:var(--primary);margin-bottom:16px;font-size:19px;border-bottom:2px solid var(--border);padding-bottom:10px}
+.modal-photo{width:110px;height:110px;border-radius:50%;margin:0 auto 16px;background:linear-gradient(135deg,#ede9fe,#fef3c7);display:flex;align-items:center;justify-content:center;font-size:42px;color:var(--primary);overflow:hidden;border:4px solid #fff}
+.modal-photo img{width:100%;height:100%;object-fit:cover}
+.detail-row{display:flex;justify-content:space-between;padding:10px 4px;border-bottom:1px dashed var(--border);font-size:14px}
+.detail-row:last-child{border-bottom:none}
+.detail-row b{color:var(--text-3);font-weight:600;font-size:13px}
+.detail-row span{color:var(--text);font-weight:700}
+#fatalError{position:fixed;top:0;left:0;right:0;background:linear-gradient(135deg,#dc2626,#ef4444);color:#fff;padding:14px 20px;z-index:9999;font-family:monospace;font-size:13px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#1c1838,#3a3466);color:#fff;padding:14px 22px;border-radius:14px;z-index:9999;font-weight:700;box-shadow:0 12px 32px rgba(0,0,0,.35)}
+.sync-badge{position:fixed;bottom:14px;left:14px;background:#fff;padding:8px 14px;border-radius:var(--radius-pill);font-size:12px;font-weight:700;box-shadow:var(--shadow-md);z-index:60;border:1.5px solid var(--border)}
+.sync-badge.online{color:#059669;border-color:#a7f3d0;background:#f0fdf4}
+.sync-badge.pending{color:#d97706;border-color:#fde68a;background:#fffbeb}
+.sync-badge.error{color:#dc2626;border-color:#fecaca;background:#fef2f2}
+.quick-link{display:block;border-radius:var(--radius-lg);padding:28px;text-align:center;text-decoration:none;color:#fff;transition:.25s;box-shadow:var(--shadow-md);cursor:pointer;border:none;font-family:inherit;width:100%;margin-bottom:18px;background:linear-gradient(135deg,#7c3aed,#a78bfa)}
+.quick-link:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.quick-link .ico{font-size:52px;display:block;margin-bottom:6px}
+.quick-link .title{font-size:20px;font-weight:900}
+.quick-link .sub{font-size:13px;opacity:.92;font-weight:600;margin-top:4px}
+.role-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 12px;border-radius:999px;font-size:11.5px;font-weight:800}
+.role-chip.member{background:#dbeafe;color:#1e40af}
+.role-chip.servant{background:#fef3c7;color:#92400e}
+.role-chip.leader{background:#d1fae5;color:#065f46}
+.role-chip.admin{background:#fee2e2;color:#991b1b}
+.role-chip.pending{background:#fed7aa;color:#c2410c}
+.pending-card{background:#fff;border-radius:18px;border:1.5px solid #fed7aa;padding:16px;margin-bottom:12px;box-shadow:var(--shadow-sm);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.download-source-btn{position:fixed;bottom:20px;right:20px;z-index:999;background:linear-gradient(135deg,#059669,#10b981);color:#fff;padding:12px 20px;border-radius:999px;font-weight:800;font-size:14px;box-shadow:0 8px 24px rgba(5,150,105,.4);display:flex;align-items:center;gap:8px;border:none;cursor:pointer;transition:.2s}
+.download-source-btn:hover{transform:scale(1.05)}
+@media(max-width:640px){.topbar{padding:12px 14px}.topbar .brand{font-size:15px}.tabs{top:60px;padding:10px 14px}.tabs button{padding:8px 14px;font-size:12.5px}.view{padding:14px}.card{padding:16px}.auth-card{padding:24px 20px}.form-row{grid-template-columns:1fr}.att-opts{width:100%;justify-content:flex-end}.att-opts label{padding:6px 10px;font-size:11.5px}.point-action{grid-template-columns:1fr}.point-action button{flex-direction:row;justify-content:center;padding:14px}.date-selects{grid-template-columns:1fr 1.3fr 1fr}}
+</style>
+</head>
+<body>
+
+<div id="fatalError" style="display:none"></div>
+<div id="syncBadge" class="sync-badge" style="display:none"></div>
+
+<!-- زر تنزيل الملف المصدري مباشرة في أي وقت -->
+<button class="download-source-btn" onclick="downloadCurrentSource()" title="اضغط لتنزيل ملف index.html على جهازك">
+  📥 تنزيل كود المنصة (index.html)
+</button>
+
+<div id="authScreen" class="auth-wrap">
+  <div class="auth-card">
+    <div class="brand">⛪ اجتماع أسرة القديسة فيرينا</div>
+    
+    <div id="loginBox">
+      <h2>تسجيل الدخول للمنصة</h2>
+
+      <!-- اختيار الدور لتسهيل الدخول -->
+      <div class="role-tabs">
+        <div class="role-tab-btn active" id="tabAmena" onclick="selectLoginRole('amena')">
+          <span class="ico">👑</span>
+          <span>الأمينة / المشرف</span>
+        </div>
+        <div class="role-tab-btn" id="tabServant" onclick="selectLoginRole('servant')">
+          <span class="ico">🙋</span>
+          <span>الخادم</span>
+        </div>
+        <div class="role-tab-btn" id="tabMember" onclick="selectLoginRole('member')">
+          <span class="ico">👤</span>
+          <span>المخدوم</span>
+        </div>
+      </div>
+
+      <div id="amenaBanner" class="amena-banner">
+        ✨ تسجيل الدخول بصلاحية: <b>👑 الأمينة / أمين الخدمة العام</b><br>
+        تمت تعبئة بيانات حساب الأمينة (amena) تلقائياً، يمكنك الآن الضغط على دخول مباشرة.
+      </div>
+
+      <div id="loginErr" class="err" style="display:none"></div>
+      <div id="pendingAlert" class="pending-alert"></div>
+
+      <form id="loginForm" autocomplete="off">
+        <label>اسم المستخدم أو رقم الهاتف / البريد
+          <input name="username" id="loginUsername" required value="amena" placeholder="اكتب اسم المستخدم" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        </label>
+        <label>كلمة المرور
+          <input type="password" name="password" id="loginPassword" required value="2805022" placeholder="••••••••" autocomplete="new-password">
+        </label>
+        <button class="btn primary block" id="loginBtn" type="submit">دخول الأمينة 👑</button>
+      </form>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">
+        <button class="btn ghost" onclick="showRegister('servant')">➕ تسجيل خادم جديد</button>
+        <button class="btn ghost" onclick="showRegister('member')">➕ تسجيل مخدوم جديد</button>
+      </div>
+
+      <button class="btn green block" style="margin-top:12px" onclick="downloadCurrentSource()">
+        📥 تنزيل كود المنصة (HTML)
+      </button>
+    </div>
+
+    <div id="registerBox" style="display:none">
+      <h2 id="registerTitle">📝 تسجيل بيانات جديدة</h2>
+      <div id="registerNotice" class="hint" style="background:#f3eeff;padding:10px;border-radius:12px;color:#5b21b6;font-weight:700">
+        ℹ️ سيتم إرسال طلبك للإدارة / الأمينة للاعتماد والموافقة قبل التفعيل.
+      </div>
+
+      <form id="registerForm" autocomplete="off">
+        <input type="hidden" name="targetRole" id="regTargetRole" value="member">
+        <div class="form-section-title">🔐 بيانات الدخول</div>
+        <label>الاسم بالكامل *<input name="name" required autocomplete="off" placeholder="الاسم ثلاثي"></label>
+        <label>اسم المستخدم *<input name="username" required autocomplete="off" placeholder="بالحروف الإنجليزية أو الأرقام"></label>
+        <label>كلمة المرور *<input type="password" name="password" required autocomplete="new-password" placeholder="6 أحرف على الأقل"></label>
+        <label>تأكيد كلمة المرور *<input type="password" name="password2" required autocomplete="new-password" placeholder="أعد كتابة كلمة المرور"></label>
+        
+        <div class="form-section-title">📷 الصورة الشخصية</div>
+        <label>اختر صورة (اختياري)
+          <div class="photo-upload" onclick="document.getElementById('regPhoto').click()">
+            <div class="photo-preview" id="regPhotoPreview">👤</div>
+            <div class="photo-info"><b>اضغط لاختيار صورة</b><small>حتى 500 كيلو</small></div>
+          </div>
+          <input type="file" id="regPhoto" accept="image/*" style="display:none" onchange="previewRegPhoto(this)">
+        </label>
+
+        <div class="form-section-title">👤 بيانات شخصية</div>
+        <label>رقم الهاتف *<input name="phone" required placeholder="01xxxxxxxxx"></label>
+        <label style="margin-bottom:6px">📅 تاريخ الميلاد</label>
+        <div class="date-selects">
+          <select name="birthDay" id="birthDay"><option value="">يوم</option></select>
+          <select name="birthMonth" id="birthMonth"><option value="">شهر</option></select>
+          <select name="birthYear" id="birthYear"><option value="">سنة</option></select>
+        </div>
+        <label style="margin-top:14px">النوع<select name="gender"><option value="">— اختر —</option><option value="ذكر">ذكر</option><option value="أنثى">أنثى</option></select></label>
+        <label>أب الاعتراف<input name="confessionFather" placeholder="اسم أب الاعتراف"></label>
+        <label>العنوان<input name="address" placeholder="المنطقة / الشارع"></label>
+
+        <div class="form-section-title">🎓 الحالة التعليمية / الاجتماعية</div>
+        <label>الحالة الاجتماعية *<select name="maritalStatus" id="regMarital" onchange="onMaritalChange()">
+          <option value="">— اختر —</option>
+          <option value="طالب">🎓 طالب</option>
+          <option value="خريج">🎓 خريج</option>
+          <option value="أعزب">👤 أعزب</option>
+          <option value="متزوج">💍 متزوج</option>
+          <option value="مخطوب">💍 مخطوب</option>
+        </select></label>
+        <label id="regEducationWrap">المرحلة التعليمية<select name="education"><option value="">— اختر —</option><option value="ابتدائي">ابتدائي</option><option value="إعدادي">إعدادي</option><option value="ثانوي">ثانوي</option><option value="جامعي">جامعي</option><option value="دراسات عليا">دراسات عليا</option><option value="خريج">خريج</option></select></label>
+        <label id="regSchoolWrap">المدرسة / الجامعة<input name="school"></label>
+        <label id="regJobWrap">الوظيفة<input name="job"></label>
+        <label id="regSpouseWrap" style="display:none">اسم الزوج/الزوجة<input name="spouseName"></label>
+        <label>ملاحظات إضافية<textarea name="notes" rows="2"></textarea></label>
+
+        <button class="btn primary block" type="submit">✅ تقديم طلب التسجيل</button>
+      </form>
+      <button class="btn ghost block" onclick="showLogin()">رجوع لتسجيل الدخول</button>
+    </div>
+  </div>
+</div>
+
+<div id="appScreen" class="hidden">
+  <header class="topbar">
+    <div class="brand">⛪ أسرة القديسة فيرينا <span class="live-dot"></span></div>
+    <div class="top-actions">
+      <button class="bell" onclick="go('notifications')">🔔<span id="bellBadge" class="badge" style="display:none">0</span></button>
+      <span id="userChip" class="chip"></span>
+      <button class="btn small" style="background:#059669;color:#fff" onclick="downloadCurrentSource()">📥 تنزيل HTML</button>
+      <button class="btn small ghost" style="color:#fff;border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.1)" onclick="logout()">خروج</button>
+    </div>
+  </header>
+  <nav id="tabs" class="tabs"></nav>
+  <main id="view" class="view"></main>
+</div>
+
+<div id="modalRoot"></div>
+
+<script>
+var firebaseConfig = {
+  apiKey: "AIzaSyDopFwnPp3oS2UnMXt9YEHGOLFQmpR4-Dk",
+  authDomain: "stmariam-1fdc0.firebaseapp.com",
+  databaseURL: "https://stmariam-1fdc0-default-rtdb.firebaseio.com",
+  projectId: "stmariam-1fdc0",
+  storageBucket: "stmariam-1fdc0.firebasestorage.app",
+  messagingSenderId: "105645960370",
+  appId: "1:105645960370:web:cb11fb7fc5bbea9cbdedab"
+};
+
+var fdb = null, firebaseOk = false, pendingWrites = 0;
+var cache = {}, fromFirebase = false;
+var KEYS = ['users','members','attendance','points','media','notifs','settings','readings'];
+
+function initFirebase(){
+  try { firebase.initializeApp(firebaseConfig); fdb = firebase.database(); firebaseOk = true; return true; }
+  catch(e){ console.error('Firebase error:', e); firebaseOk = false; return false; }
+}
+window.addEventListener('error', function(e){
+  var box = document.getElementById('fatalError');
+  if(box){ box.style.display='block'; box.textContent = '⚠️ خطأ: ' + e.message; }
+});
+function $(s){ return document.querySelector(s); }
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).substring(2, 7); }
+function K(p){ return 'chm_' + p; }
+function esc(s){ if(s === null || s === undefined) s = ''; return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function fmtDate(ts){ return new Date(ts).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'}); }
+function fmtTime(ts){ return new Date(ts).toLocaleString('ar-EG',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}); }
+function todayStr(){ var d = new Date(); return d.toISOString().slice(0,10); }
+function initial(name){ return name && name.length ? name.charAt(0) : '?'; }
+function toast(msg, color){ var t = document.createElement('div'); t.className = 'toast'; if(color) t.style.background = color; t.textContent = msg; document.body.appendChild(t); setTimeout(function(){ if(t.parentNode) t.parentNode.removeChild(t); }, 3000); }
+function get(k, def){ return (cache[k] === undefined || cache[k] === null) ? def : cache[k]; }
+function set(k, v){
+  cache[k] = v;
+  try { localStorage.setItem(K(k), JSON.stringify(v)); } catch(e){}
+  if(firebaseOk && fdb && !fromFirebase){
+    pendingWrites++; updateSyncBadge();
+    fdb.ref('chm/' + k).set(v).then(function(){ pendingWrites--; updateSyncBadge(); }).catch(function(err){ pendingWrites--; updateSyncBadge(); console.error('Save error:', err); toast('⚠️ فشل المزامنة', 'linear-gradient(135deg,#dc2626,#ef4444)'); });
+  }
+}
+function updateSyncBadge(){
+  var b = document.getElementById('syncBadge');
+  if(!b) return;
+  b.style.display = 'block';
+  if(!firebaseOk){ b.className='sync-badge error'; b.textContent='❌ Firebase مش متصل (يعمل محلياً)'; }
+  else if(pendingWrites > 0){ b.className='sync-badge pending'; b.textContent='⏳ جاري المزامنة...'; }
+  else { b.className='sync-badge online'; b.textContent='✅ متزامن مع جميع الأجهزة'; }
+}
+
+function downloadCurrentSource(){
+  var htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+  var blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'index.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  toast('✅ جاري تنزيل ملف index.html على جهازك');
+}
+
+function setupFirebaseListeners(){
+  if(!firebaseOk || !fdb) return;
+  fdb.ref('chm').on('value', function(snap){
+    var val = snap.val() || {};
+    var changed = JSON.stringify(cache) !== JSON.stringify(val);
+    fromFirebase = true;
+    cache = val;
+    try { KEYS.forEach(function(k){ if(cache[k] !== undefined && cache[k] !== null){ localStorage.setItem(K(k), JSON.stringify(cache[k])); } }); } catch(e){}
+    setTimeout(function(){ fromFirebase = false; }, 50);
+    if(changed && state.user){
+      var users = get('users', []);
+      var found = null;
+      for(var i=0;i<users.length;i++){ if(users[i].id === state.user.id){ found = users[i]; break; } }
+      if(!found || found.active === false){ toast('⚠️ تم إيقاف حسابك أو تعليقه'); logout(); return; }
+      state.user = found;
+      $('#userChip').textContent = state.user.name + ' — ' + roleLabel(state.user.role);
+      renderTabs(); render();
+    }
+    updateSyncBadge();
+  }, function(err){ console.error('Read error:', err); updateSyncBadge(); });
+}
+
+var POINT_COLORS = {
+  green:{value:3, label:'أخضر', emoji:'🟢'},
+  blue: {value:5, label:'أزرق', emoji:'🔵'},
+  red:  {value:10,label:'أحمر', emoji:'🔴'}
+};
+var AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+var ALL_PERMISSIONS = [
+  {id:'members_view',label:'👁️ عرض المخدومين'},
+  {id:'members_edit',label:'✏️ إضافة/تعديل/حذف المخدومين'},
+  {id:'attendance_take',label:'✅ تسجيل الحضور'},
+  {id:'points_grant',label:'⭐ منح النقاط'},
+  {id:'library_upload',label:'📚 رفع ملفات'},
+  {id:'notifs_send',label:'📢 إرسال الإشعارات'},
+  {id:'readings_manage',label:'📖 إدارة القراءات'},
+  {id:'users_manage',label:'👥 إدارة المستخدمين والموافقات'}
+];
+function hasPerm(u, p){ if(!u) return false; if(u.role === 'admin' || u.role === 'leader') return true; return u.permissions && u.permissions.indexOf(p) !== -1; }
+function isManager(u){ return !!u && (u.role === 'admin' || u.role === 'leader'); }
+
+function fillDateSelects(){
+  var d = document.getElementById('birthDay'), m = document.getElementById('birthMonth'), y = document.getElementById('birthYear');
+  if(!d || !m || !y || d.options.length > 1) return;
+  for(var i=1;i<=31;i++){ var o=document.createElement('option'); o.value=(i<10?'0':'')+i; o.textContent=i; d.appendChild(o); }
+  for(var j=0;j<12;j++){ var o2=document.createElement('option'); o2.value=(j+1<10?'0':'')+(j+1); o2.textContent=AR_MONTHS[j]; m.appendChild(o2); }
+  var now = new Date().getFullYear();
+  for(var k=now;k>=1930;k--){ var o3=document.createElement('option'); o3.value=k; o3.textContent=k; y.appendChild(o3); }
+}
+
+var state = { user: null, tab: 'home', pointMember: null, attFilter: 'all' };
+var regPhotoData = '', memPhotoData = '';
+
+function init(){
+  KEYS.forEach(function(k){ try { var v = localStorage.getItem(K(k)); if(v !== null) cache[k] = JSON.parse(v); } catch(e){} });
+  var ok = initFirebase();
+  if(ok && fdb){
+    fdb.ref('chm').once('value').then(function(snap){
+      var val = snap.val() || {};
+      if(!val.users || !val.users.length){
+        val.users = [{ id: uid(), name:'نيفين فؤاد', username:'amena', password:'2805022', role:'leader', active:true, status:'active', created:Date.now(), notifSeen:0, permissions:[], photo:'' }];
+        val.members = []; val.attendance = []; val.points = []; val.media = []; val.notifs = []; val.readings = [];
+        val.settings = { pPresent:10, pLate:5, pExcused:1, pAbsent:0 };
+        fdb.ref('chm').set(val);
+      } else {
+        var hasN = false;
+        for(var i=0;i<val.users.length;i++){ if(val.users[i].role === 'leader' || val.users[i].username==='amena'){ hasN=true; break; } }
+        if(!hasN){
+          val.users.push({ id: uid(), name:'نيفين فؤاد', username:'amena', password:'2805022', role:'leader', active:true, status:'active', created:Date.now(), notifSeen:0, permissions:[], photo:'' });
+          fdb.ref('chm/users').set(val.users);
+        }
+      }
+      cache = val;
+      fromFirebase = true; setTimeout(function(){ fromFirebase = false; }, 100);
+      finishInit();
+      setupFirebaseListeners();
+    }).catch(function(err){ console.error('Init error:', err); setupDefaultData(); finishInit(); });
+  } else { setupDefaultData(); finishInit(); }
+}
+function setupDefaultData(){
+  if(!cache.users || !cache.users.length){ cache.users = [{ id: uid(), name:'نيفين فؤاد', username:'amena', password:'2805022', role:'leader', active:true, status:'active', created:Date.now(), notifSeen:0, permissions:[], photo:'' }]; }
+  if(!cache.members) cache.members = [];
+  if(!cache.attendance) cache.attendance = [];
+  if(!cache.points) cache.points = [];
+  if(!cache.media) cache.media = [];
+  if(!cache.notifs) cache.notifs = [];
+  if(!cache.readings) cache.readings = [];
+  if(!cache.settings) cache.settings = { pPresent:10, pLate:5, pExcused:1, pAbsent:0 };
+}
+function finishInit(){
+  fillDateSelects();
+  var sid = get('session', null);
+  if(sid){
+    var users = get('users', []);
+    for(var i=0;i<users.length;i++){
+      if(users[i].id === sid){
+        if(users[i].active === false || users[i].status === 'pending'){ set('session', null); break; }
+        state.user = users[i];
+        showApp();
+        updateSyncBadge();
+        return;
+      }
+    }
+  }
+  showLogin();
+  updateSyncBadge();
+}
+
+function selectLoginRole(role){
+  var tabA = document.getElementById('tabAmena'), tabS = document.getElementById('tabServant'), tabM = document.getElementById('tabMember');
+  var banner = document.getElementById('amenaBanner');
+  var uInp = document.getElementById('loginUsername'), pInp = document.getElementById('loginPassword');
+  var btn = document.getElementById('loginBtn');
+  var err = document.getElementById('loginErr'), pal = document.getElementById('pendingAlert');
+  if(err) err.style.display = 'none';
+  if(pal) pal.style.display = 'none';
+
+  tabA.classList.remove('active'); tabS.classList.remove('active'); tabM.classList.remove('active');
+
+  if(role === 'amena'){
+    tabA.classList.add('active');
+    banner.style.display = 'block';
+    uInp.value = 'amena';
+    pInp.value = '2805022';
+    btn.textContent = 'دخول الأمينة 👑';
+  } else if(role === 'servant'){
+    tabS.classList.add('active');
+    banner.style.display = 'none';
+    uInp.value = '';
+    pInp.value = '';
+    uInp.focus();
+    btn.textContent = 'دخول الخادم 🙋';
+  } else {
+    tabM.classList.add('active');
+    banner.style.display = 'none';
+    uInp.value = '';
+    pInp.value = '';
+    uInp.focus();
+    btn.textContent = 'دخول المخدوم 👤';
+  }
+}
+
+function onMaritalChange(){
+  var val = $('#regMarital') ? $('#regMarital').value : '';
+  var isStudent = (val === 'طالب' || val === 'خريج');
+  var isMarried = (val === 'متزوج');
+  var e= $('#regEducationWrap'), s=$('#regSchoolWrap'), j=$('#regJobWrap'), sp=$('#regSpouseWrap');
+  if(e) e.style.display = isStudent ? 'block' : 'none';
+  if(s) s.style.display = isStudent ? 'block' : 'none';
+  if(j) j.style.display = (!isStudent && val) ? 'block' : (isStudent ? 'none' : 'block');
+  if(sp) sp.style.display = isMarried ? 'block' : 'none';
+}
+function previewRegPhoto(input){
+  var file = input.files[0]; if(!file) return;
+  if(file.size > 500*1024){ alert('⚠️ الصورة كبيرة! الحد 500 كيلو'); input.value=''; return; }
+  var r = new FileReader();
+  r.onload = function(e){ regPhotoData = e.target.result; var b = document.getElementById('regPhotoPreview'); if(b) b.innerHTML = '<img src="'+regPhotoData+'">'; };
+  r.readAsDataURL(file);
+}
+function showLogin(){
+  $('#authScreen').classList.remove('hidden');
+  $('#appScreen').classList.add('hidden');
+  $('#loginBox').style.display = 'block';
+  $('#registerBox').style.display = 'none';
+  selectLoginRole('amena');
+  regPhotoData = '';
+}
+function showRegister(targetRole){
+  $('#loginBox').style.display = 'none';
+  $('#registerBox').style.display = 'block';
+  document.getElementById('registerForm').reset();
+  document.getElementById('regTargetRole').value = targetRole || 'member';
+  var title = document.getElementById('registerTitle');
+  if(title){ title.textContent = targetRole === 'servant' ? '📝 تسجيل بيانات خادم جديد' : '📝 تسجيل بيانات مخدوم جديد'; }
+  onMaritalChange();
+  fillDateSelects();
+  regPhotoData = '';
+  var p = document.getElementById('regPhotoPreview'); if(p) p.innerHTML = '👤';
+}
+
+document.getElementById('loginForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  var f = e.target;
+  var users = get('users', []);
+  var uname = f.username.value.trim();
+  var pass = f.password.value;
+  var u = null;
+  for(var i=0;i<users.length;i++){
+    if((users[i].username === uname || users[i].phone === uname) && users[i].password === pass){
+      u = users[i];
+      break;
+    }
+  }
+  var err = $('#loginErr'), pal = $('#pendingAlert');
+  if(!u){
+    pal.style.display = 'none';
+    err.textContent = 'اسم المستخدم أو كلمة المرور غير صحيحة';
+    err.style.display = 'block';
+    return;
+  }
+  // فحص حالة التعليق وموافقة الإدارة
+  if(u.status === 'pending' || u.active === false){
+    err.style.display = 'none';
+    pal.innerHTML = '⏳ <b>الحساب قيد المراجعة والاعتماد!</b><br>تم تسجيل بياناتك بنجاح، وبانتظار موافقة الأمينة / المشرف العام لتفعيل حسابك.';
+    pal.style.display = 'block';
+    return;
+  }
+  err.style.display = 'none';
+  pal.style.display = 'none';
+  state.user = u;
+  set('session', u.id);
+  f.reset();
+  showApp();
+});
+
+document.getElementById('registerForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  var f = e.target;
+  var name = f.name.value.trim(), username = f.username.value.trim();
+  var password = f.password.value, password2 = f.password2.value;
+  var phone = f.phone.value.trim();
+  var targetRole = f.targetRole.value || 'member';
+  var bd=f.birthDay.value, bm=f.birthMonth.value, by=f.birthYear.value;
+  var birth = (bd && bm && by) ? (bd+'/'+bm+'/'+by) : '';
+  var gender = f.gender.value, address = f.address.value.trim();
+  var confessionFather = f.confessionFather.value.trim();
+  var maritalStatus = f.maritalStatus.value;
+  var education = f.education ? f.education.value : '';
+  var school = f.school ? f.school.value.trim() : '';
+  var job = f.job ? f.job.value.trim() : '';
+  var spouseName = f.spouseName ? f.spouseName.value.trim() : '';
+  var notes = f.notes.value.trim();
+
+  if(!name || !username || !password){ alert('يرجى إكمال الحقول الإلزامية'); return; }
+  if(password !== password2){ alert('كلمتا المرور غير متطابقتين'); return; }
+  if(password.length < 6){ alert('كلمة المرور يجب ألا تقل عن 6 أحرف'); return; }
+  if(!phone){ alert('رقم الهاتف إلزامي'); return; }
+
+  var users = get('users', []);
+  for(var i=0;i<users.length;i++){
+    if(users[i].username.toLowerCase() === username.toLowerCase()){ alert('⚠️ اسم المستخدم مسجل مسبقاً، اختر اسماً آخر'); return; }
+  }
+
+  // إنشاء الحساب بحالة معلقة بانتظار موافقة الإدارة
+  var newUser = {
+    id: uid(),
+    name: name,
+    username: username,
+    password: password,
+    role: targetRole,
+    phone: phone,
+    active: false,
+    status: 'pending',
+    targetRole: targetRole,
+    permissions: [],
+    photo: regPhotoData,
+    created: Date.now(),
+    notifSeen: 0
+  };
+  users.push(newUser);
+  set('users', users);
+
+  // إدراج سجل المخدوم/الخادم
+  var members = get('members', []);
+  members.push({
+    id: uid(),
+    userId: newUser.id,
+    name: name,
+    phone: phone,
+    confessionFather: confessionFather,
+    birth: birth,
+    gender: gender,
+    address: address,
+    maritalStatus: maritalStatus,
+    education: education,
+    school: school,
+    job: job,
+    spouseName: spouseName,
+    notes: notes,
+    photo: regPhotoData,
+    role: targetRole,
+    status: 'pending',
+    created: Date.now()
+  });
+  set('members', members);
+
+  // إشعار فوري في لوحة التحكم للأمينة
+  var notifs = get('notifs', []);
+  notifs.push({
+    id: uid(),
+    title: 'طلب تسجيل جديد — ' + name,
+    body: '📝 طلب تسجيل حساب جديد بانتظار الموافقة:\n👤 الاسم: ' + name + '\n📞 الهاتف: ' + phone + '\n🎖️ الصفة المطلوبة: ' + (targetRole==='servant'?'خادم':'مخدوم') + '\n⛪ أب الاعتراف: ' + (confessionFather || 'غير محدد'),
+    audience: 'servants',
+    author: name,
+    date: Date.now(),
+    type: 'new_member'
+  });
+  set('notifs', notifs);
+
+  f.reset();
+  regPhotoData = '';
+
+  alert('✅ تم تسجيل بياناتك بنجاح!\n\nطلبك الآن بانتظار موافقة الأمينة / المشرف لتفعيل الحساب.\nسيتم تفعيل حسابك لتتمكن من الدخول مباشرة.');
+  showLogin();
+});
+
+function logout(){ set('session', null); state.user = null; showLogin(); }
+
+var TABS = [
+  {id:'home',label:'🏠 الرئيسية',show:function(){return true;}},
+  {id:'members',label:'👥 المخدومون',show:function(u){return isManager(u)||hasPerm(u,'members_view')||hasPerm(u,'members_edit');}},
+  {id:'attendance',label:'✅ الحضور',show:function(u){return isManager(u)||hasPerm(u,'attendance_take');}},
+  {id:'points',label:'⭐ النقاط والشجرة',show:function(){return true;}},
+  {id:'readings',label:'📖 القراءات',show:function(){return true;}},
+  {id:'library',label:'📚 المكتبة',show:function(){return true;}},
+  {id:'notifications',label:'🔔 الإشعارات',show:function(){return true;}},
+  {id:'admin',label:'⚙️ الإدارة والطلبات',show:function(u){return isManager(u)||hasPerm(u,'users_manage');}}
+];
+function showApp(){
+  $('#authScreen').classList.add('hidden');
+  $('#appScreen').classList.remove('hidden');
+  $('#userChip').textContent = state.user.name+' — '+roleLabel(state.user.role);
+  renderTabs(); render();
+}
+function roleLabel(r){ if(r==='admin') return 'مشرف عام'; if(r==='leader') return 'أمين الخدمة'; if(r==='servant') return 'خادم'; return 'مخدوم'; }
+function roleChip(r, status){
+  if(status === 'pending') return '<span class="role-chip pending">⏳ معلق بانتظار الموافقة</span>';
+  if(r==='admin') return '<span class="role-chip admin">👑 مشرف عام</span>';
+  if(r==='leader') return '<span class="role-chip leader">💼 أمين خدمة</span>';
+  if(r==='servant') return '<span class="role-chip servant">🙋 خادم</span>';
+  return '<span class="role-chip member">👤 مخدوم</span>';
+}
+function renderTabs(){
+  var nav = $('#tabs'), html = '';
+  for(var i=0;i<TABS.length;i++){ var t = TABS[i]; if(!t.show(state.user)) continue; var cls = state.tab === t.id ? 'active' : ''; html += '<button class="'+cls+'" onclick="go(\''+t.id+'\')">'+t.label+'</button>'; }
+  nav.innerHTML = html;
+  var avail = false;
+  for(var j=0;j<TABS.length;j++){ if(TABS[j].id === state.tab && TABS[j].show(state.user)){ avail=true; break; } }
+  if(!avail) state.tab = 'home';
+}
+function go(tab){ state.tab = tab; if(tab === 'attendance') state.attFilter = 'all'; renderTabs(); render(); window.scrollTo({top:0,behavior:'smooth'}); }
+function render(){
+  var v = $('#view');
+  var map = {home:viewHome,members:viewMembers,attendance:viewAttendance,points:viewPoints,readings:viewReadings,library:viewLibrary,notifications:viewNotifications,admin:viewAdmin};
+  (map[state.tab] || viewHome)(v);
+  updateBell();
+}
+
+function memberPoints(id){
+  var arr = get('points', []), total = 0;
+  for(var i=0;i<arr.length;i++){ if(arr[i].memberId === id) total += (+arr[i].points||0); }
+  return total;
+}
+function levelOf(p){
+  if(p>=400) return {name:'شجرة مثمرة 🌳🍎',idx:4,next:null};
+  if(p>=250) return {name:'شجرة كبيرة 🌳',idx:3,next:400};
+  if(p>=120) return {name:'شجرة متوسطة 🌲',idx:2,next:250};
+  if(p>=50) return {name:'شجرة صغيرة 🌿',idx:1,next:120};
+  return {name:'بذرة 🌱',idx:0,next:50};
+}
+function treeSVG(points){
+  var lvl = levelOf(points).idx;
+  var leavesCount = Math.min(3+Math.floor(points/12),20);
+  var trunkH = 45+lvl*12;
+  var trunkTop = 190-trunkH;
+  var leaves = '';
+  var colors = ['#4ade80','#22c55e','#16a34a','#15803d','#86efac'];
+  for(var i=0;i<leavesCount;i++){
+    var a=i*2.399, r=18+(i%5)*16;
+    var cx=150+Math.cos(a)*r, cy=(trunkTop-25)+Math.sin(a)*r*0.65;
+    var rad=11+(i%3)*5;
+    leaves += '<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="'+rad+'" fill="'+colors[i%5]+'" opacity="0.92"/>';
+  }
+  var fruits = '';
+  if(lvl === 4){ for(var j=0;j<6;j++){ var fx=150+Math.cos(j*1.7)*45, fy=trunkTop-15+Math.sin(j*1.7)*30; fruits += '<circle cx="'+fx.toFixed(1)+'" cy="'+fy.toFixed(1)+'" r="6" fill="#ef4444"/>'; } }
+  return '<svg viewBox="0 0 300 220" width="100%" style="max-width:320px">'+'<ellipse cx="150" cy="200" rx="95" ry="14" fill="#ddd6fe" opacity="0.5"/>'+'<rect x="143" y="'+trunkTop+'" width="14" height="'+trunkH+'" rx="5" fill="#92400e"/>'+'<line x1="150" y1="'+(trunkTop+22)+'" x2="112" y2="'+(trunkTop-4)+'" stroke="#92400e" stroke-width="7" stroke-linecap="round"/>'+'<line x1="150" y1="'+(trunkTop+34)+'" x2="190" y2="'+(trunkTop+6)+'" stroke="#92400e" stroke-width="7" stroke-linecap="round"/>'+leaves + fruits + '</svg>';
+}
+
+function matchAudience(n){
+  var r = state.user.role;
+  if(isManager(state.user)) return true;
+  if(n.audience === 'all') return true;
+  if(n.audience === 'members') return r === 'member';
+  if(n.audience === 'servants') return r === 'servant';
+  return true;
+}
+function visibleNotifs(){ var arr = get('notifs', []), out = []; for(var i=0;i<arr.length;i++){ if(matchAudience(arr[i])) out.push(arr[i]); } out.sort(function(a,b){return b.date-a.date;}); return out; }
+function updateBell(){
+  if(!state.user) return;
+  var seen = state.user.notifSeen||0;
+  var arr = get('notifs', []), c=0;
+  for(var i=0;i<arr.length;i++){ if(arr[i].date>seen && matchAudience(arr[i])) c++; }
+  var b = $('#bellBadge');
+  if(c>0){ b.textContent=c; b.style.display='flex'; } else b.style.display='none';
+}
+function markSeen(){
+  var users = get('users', []);
+  for(var i=0;i<users.length;i++){ if(users[i].id === state.user.id){ users[i].notifSeen = Date.now(); state.user = users[i]; break; } }
+  set('users', users); updateBell();
+}
+function notifCard(n){
+  var seen = state.user.notifSeen||0;
+  var unread = n.date > seen ? ' unread' : '';
+  return '<div class="notif'+unread+'">'+
+    '<h4>🔔 '+esc(n.title)+(unread?' <span class="tag" style="background:#fef3c7;color:#92400e">جديد</span>':'')+'</h4>'+
+    '<p>'+esc(n.body)+'</p>'+
+    '<div class="meta"><span class="tag">'+(n.audience==='all'?'🌍 للجميع':n.audience==='members'?'👥 للمخدومين':'🙋 للخدام والأمناء')+'</span>'+
+    '<span>✍️ '+esc(n.author)+'</span><span>🕒 '+fmtTime(n.date)+'</span></div></div>';
+}
+
+function viewHome(v){
+  var members = get('members', []).filter(function(m){ return m.status !== 'pending'; });
+  var users = get('users', []);
+  var pendingUsers = users.filter(function(u){ return u.status === 'pending' || u.active === false; });
+  var att = get('attendance', []), media = get('media', []);
+  var list = visibleNotifs();
+  var today = todayStr(), todayPresent = 0;
+  for(var i=0;i<att.length;i++){ if(att[i].date===today && att[i].status==='present') todayPresent++; }
+
+  var pendingAlertHTML = '';
+  if(isManager(state.user) && pendingUsers.length > 0){
+    pendingAlertHTML = '<div class="card" style="border-right:5px solid #f59e0b;background:#fffbeb">'+
+      '<div class="card-head">'+
+        '<h3 style="color:#b45309;margin:0">⏳ لديك ('+pendingUsers.length+') طلب تسجيل جديد بانتظار الموافقة</h3>'+
+        '<button class="btn amber small" onclick="go(\'admin\')">مراجعة واعتماد الطلبات ←</button>'+
+      '</div>'+
+    '</div>';
+  }
+
+  var bibleLink = '<a href="https://st-takla.org/Bibles/" target="_blank" class="quick-link">'+
+    '<span class="ico">📕</span>'+
+    '<div class="title">الكتاب المقدس</div>'+
+    '<div class="sub">اقرأ العهدين القديم والجديد</div>'+
+  '</a>';
+
+  var notifHTML = '';
+  if(list.length){ for(var j=0;j<Math.min(3,list.length);j++) notifHTML += notifCard(list[j]); } else notifHTML = '<p class="empty">لا توجد إشعارات بعد</p>';
+
+  v.innerHTML = pendingAlertHTML + bibleLink +
+    '<div class="grid-stats">'+
+      '<div class="stat"><div class="stat-num">'+members.length+'</div><div class="stat-lbl">مخدوم معتمد</div></div>'+
+      '<div class="stat"><div class="stat-num">'+todayPresent+'</div><div class="stat-lbl">حضور اليوم</div></div>'+
+      '<div class="stat"><div class="stat-num">'+pendingUsers.length+'</div><div class="stat-lbl">طلبات معلقة</div></div>'+
+      '<div class="stat"><div class="stat-num">'+media.length+'</div><div class="stat-lbl">ملف بالمكتبة</div></div>'+
+    '</div>'+'<h3 class="sec-title">🔔 أحدث الإشعارات</h3>'+notifHTML;
+}
+
+function viewMembers(v){
+  var canEdit = isManager(state.user) || hasPerm(state.user,'members_edit');
+  var isLeader = state.user.role === 'leader' || state.user.role === 'admin';
+  v.innerHTML = '<div class="card"><div class="card-head"><h3 style="margin:0">👥 قائمة المخدومين والخدام (<span id="memCount">0</span>)</h3><input id="memberSearch" class="search" placeholder="🔍 بحث..."></div><div id="membersTable"></div></div>';
+  document.getElementById('memberSearch').addEventListener('input', drawMembersTable);
+  drawMembersTable();
+}
+
+function drawMembersTable(){
+  var canEdit = isManager(state.user) || hasPerm(state.user,'members_edit');
+  var isLeader = state.user.role === 'leader' || state.user.role === 'admin';
+  var q = ($('#memberSearch') ? $('#memberSearch').value : '').trim();
+  var members = get('members', []);
+  var users = get('users', []);
+
+  if(q){ members = members.filter(function(m){ return (m.name||'').indexOf(q)!==-1 || (m.phone||'').indexOf(q)!==-1 || (m.confessionFather||'').indexOf(q)!==-1; }); }
+  $('#memCount').textContent = members.length;
+  if(!members.length){ $('#membersTable').innerHTML = '<p class="empty">لا يوجد مخدومون مسجلون</p>'; return; }
+
+  var rows = '';
+  for(var i=0;i<members.length;i++){
+    var m = members[i]; var p = memberPoints(m.id), lv = levelOf(p);
+    var linkedUser = null;
+    if(m.userId){ for(var u=0;u<users.length;u++){ if(users[u].id === m.userId){ linkedUser = users[u]; break; } } }
+    var mRole = linkedUser ? linkedUser.role : (m.role || 'member');
+    var mStatus = linkedUser ? linkedUser.status : (m.status || 'active');
+
+    var actions = '';
+    if(mStatus === 'pending' && isLeader){
+      actions = '<button class="btn small green" onclick="approveUserDirect(\''+(m.userId||'')+'\',\'servant\')" title="موافقة كخادم">🎖️ خادم</button> ' +
+                '<button class="btn small primary" onclick="approveUserDirect(\''+(m.userId||'')+'\',\'member\')" title="موافقة كمخدوم">👤 مخدوم</button>';
+    } else {
+      actions = '<button class="btn small ghost" onclick="showMemberDetails(\''+m.id+'\')">👁️</button>';
+      if(canEdit){ actions += ' <button class="btn small red" onclick="delMember(\''+m.id+'\')">🗑️</button>'; }
+    }
+
+    var roleBadge = roleChip(mRole, mStatus);
+    var av = m.photo ? '<img src="'+m.photo+'" class="avatar-sm">' : '<div class="avatar-placeholder">'+esc(initial(m.name))+'</div>';
+    rows += '<tr><td>'+(i+1)+'</td>'+
+      '<td><div class="name-cell">'+av+'<b>'+esc(m.name)+'</b></div></td>'+
+      '<td>'+esc(m.phone||'—')+'</td>'+
+      '<td>'+roleBadge+'</td>'+
+      '<td>'+esc(m.confessionFather||'—')+'</td>'+
+      '<td><span class="points-badge '+(p>=10?'red':p>=5?'blue':'green')+'">'+p+' نقطة</span></td>'+
+      '<td style="font-size:13px">'+lv.name+'</td>'+
+      '<td>'+actions+'</td></tr>';
+  }
+  $('#membersTable').innerHTML = '<div class="table-wrap"><table><thead><tr><th>#</th><th>الاسم</th><th>الهاتف</th><th>الصفة / الحالة</th><th>أب الاعتراف</th><th>النقاط</th><th>المستوى</th><th>إجراء</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+}
+
+function showMemberDetails(id){
+  var members = get('members', []), m = null;
+  for(var i=0;i<members.length;i++){ if(members[i].id===id){ m=members[i]; break; } }
+  if(!m) return;
+  var pts = memberPoints(m.id), lv = levelOf(pts);
+  var ph = m.photo ? '<div class="modal-photo"><img src="'+m.photo+'"></div>' : '<div class="modal-photo">'+esc(initial(m.name))+'</div>';
+  var html = '<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal-box">'+ph+'<h3 style="text-align:center">📋 '+esc(m.name)+'</h3>'+
+    '<div class="detail-row"><b>الهاتف</b><span>'+esc(m.phone||'—')+'</span></div>'+
+    '<div class="detail-row"><b>⛪ أب الاعتراف</b><span>'+esc(m.confessionFather||'—')+'</span></div>'+
+    '<div class="detail-row"><b>الحالة الاجتماعية</b><span>'+esc(m.maritalStatus||'—')+'</span></div>'+
+    '<div class="detail-row"><b>التعليم / الوظيفة</b><span>'+esc(m.education||m.job||'—')+'</span></div>'+
+    '<div class="detail-row"><b>⭐ النقاط</b><span style="color:#6d28d9">'+pts+'</span></div>'+
+    '<button class="btn primary block" style="margin-top:16px" onclick="closeModal()">إغلاق</button></div></div>';
+  document.getElementById('modalRoot').innerHTML = html;
+}
+function closeModal(){ document.getElementById('modalRoot').innerHTML = ''; }
+
+function delMember(id){
+  if(!confirm('حذف هذا السجل نهائياً؟')) return;
+  set('members', get('members', []).filter(function(m){return m.id!==id;}));
+  toast('🗑️ تم الحذف');
+  drawMembersTable();
+}
+
+function viewAttendance(v){
+  var members = get('members', []).filter(function(m){ return m.status !== 'pending'; });
+  var s = get('settings', {pPresent:10, pLate:5, pExcused:1, pAbsent:0});
+  var listHTML = '';
+  if(members.length){
+    for(var i=0;i<members.length;i++){
+      var m = members[i];
+      var pts = memberPoints(m.id);
+      var av = m.photo ? '<img src="'+m.photo+'" class="avatar-sm">' : '<div class="avatar-placeholder">'+esc(initial(m.name))+'</div>';
+      listHTML += '<div class="att-row" data-id="'+m.id+'" data-status="present">'+
+        '<div class="att-name">'+av+'<div class="info"><div class="name-row"><span>'+esc(m.name)+'</span><span class="points-badge green">'+pts+'</span></div><small>أب الاعتراف: '+esc(m.confessionFather||'—')+'</small></div></div>'+
+        '<div class="att-opts">'+
+          '<label class="present on" data-status="present"><input type="radio" name="att_'+m.id+'" value="present" checked>✅ حاضر</label>'+
+          '<label class="late" data-status="late"><input type="radio" name="att_'+m.id+'" value="late">⏰ تأخير</label>'+
+          '<label class="excused" data-status="excused"><input type="radio" name="att_'+m.id+'" value="excused">🕐 إذن</label>'+
+          '<label class="absent" data-status="absent"><input type="radio" name="att_'+m.id+'" value="absent">❌ غائب</label>'+
+        '</div></div>';
+    }
+  } else listHTML = '<p class="empty">لا يوجد مخدومون معتمدون بعد</p>';
+  v.innerHTML = '<div class="card"><h3>📋 تسجيل الحضور الأسبوعي</h3><div class="form-row" style="margin-bottom:14px"><div><label>التاريخ</label><input type="date" id="attDate" value="'+todayStr()+'"></div><div><label>الاجتماع</label><input id="attSession" value="اجتماع أسرة القديسة فيرينا"></div></div></div>'+
+    '<div class="card"><div class="card-head"><h3 style="margin:0">قائمة المخدومين (<span id="attCount">'+members.length+'</span>)</h3></div>'+
+    '<div id="attList">'+listHTML+'</div>'+
+    (members.length?'<button class="btn green block" style="margin-top:16px" onclick="saveAttendance()">💾 حفظ الحضور والنقاط</button>':'')+'</div>';
+}
+
+function saveAttendance(){
+  var date = $('#attDate').value, session = ($('#attSession').value||'اجتماع').trim();
+  var s = get('settings', {pPresent:10, pLate:5, pExcused:1, pAbsent:0});
+  var members = get('members', []).filter(function(m){ return m.status !== 'pending'; });
+  var srcTag = 'att:'+date+':'+session;
+  var pointsLog = get('points', []).filter(function(p){return p.source!==srcTag;});
+  var att = get('attendance', []).filter(function(a){return !(a.date===date && a.session===session);});
+  for(var i=0;i<members.length;i++){
+    var m = members[i];
+    var checked = document.querySelector('input[name="att_'+m.id+'"]:checked');
+    var st = checked?checked.value:'absent';
+    var pts = st==='present'?s.pPresent:st==='late'?s.pLate:st==='excused'?s.pExcused:s.pAbsent;
+    att.push({id:uid(),memberId:m.id,date:date,session:session,status:st,points:pts,at:Date.now()});
+    if(pts > 0){
+      pointsLog.push({ id:uid(), memberId:m.id, points:pts, color: pts>=10?'red':pts>=5?'blue':'green', reason: 'حضور — '+session+' ('+date+')', date:Date.now(), source:srcTag });
+    }
+  }
+  set('attendance', att); set('points', pointsLog);
+  toast('✅ تم حفظ الحضور وإضافة النقاط بنجاح');
+  go('points');
+}
+
+function viewPoints(v){
+  var members = get('members', []).filter(function(m){ return m.status !== 'pending'; });
+  if(!members.length){ v.innerHTML = '<div class="card"><p class="empty">لا يوجد مخدومون معتمدون بعد</p></div>'; return; }
+  var m = members[0];
+  var pts = memberPoints(m.id), lv = levelOf(pts);
+  v.innerHTML = '<div class="card" style="text-align:center"><h3 style="justify-content:center">'+esc(m.name)+'</h3><div class="level-pill">'+lv.name+'</div><div class="tree-box" style="margin-top:16px">'+treeSVG(pts)+'</div><div class="big-points">'+pts+'</div><div style="color:#6b6880;font-size:14px;font-weight:600">إجمالي النقاط</div></div>';
+}
+
+function viewReadings(v){
+  v.innerHTML = '<div class="card"><h3>📖 قراءات اليوم والسنكسار</h3><p style="color:#6b6880;line-height:2">قراءات قطمارس وأعياد الكنيسة القبطية الأرثوذكسية وسير القديسين باجتماع أسرة القديسة فيرينا.</p></div>';
+}
+
+function viewLibrary(v){
+  v.innerHTML = '<div class="card"><h3>📚 مكتبة الوسائط والملفات</h3><p style="color:#6b6880">المكتبة الروحية والملفات التابعة لأسرة القديسة فيرينا.</p></div>';
+}
+
+function viewNotifications(v){
+  var list = visibleNotifs();
+  var listHTML = list.length ? list.map(notifCard).join('') : '<p class="empty">لا توجد إشعارات حالياً</p>';
+  v.innerHTML = '<div class="card"><h3>🔔 الإشعارات الواردة</h3>'+listHTML+'</div>';
+  markSeen();
+}
+
+/* ================= قسم الإدارة واعتماد الطلبات ================= */
+function viewAdmin(v){
+  var users = get('users', []);
+  var pendingUsers = users.filter(function(u){ return u.status === 'pending' || u.active === false; });
+  var activeUsers = users.filter(function(u){ return u.status !== 'pending' && u.active !== false; });
+
+  var pendingHTML = '';
+  if(pendingUsers.length > 0){
+    var cards = '';
+    for(var p=0;p<pendingUsers.length;p++){
+      var pu = pendingUsers[p];
+      var targetRole = pu.targetRole || pu.role || 'member';
+      var roleText = targetRole === 'servant' ? '🙋 خادم' : '👤 مخدوم';
+      cards += '<div class="pending-card">'+
+        '<div>'+
+          '<h4 style="color:#b45309;font-size:15px;margin-bottom:4px">👤 '+esc(pu.name)+' <span class="tag" style="background:#fef3c7;color:#92400e">'+roleText+'</span></h4>'+
+          '<div style="font-size:13px;color:#6b6880">📱 هاتف: '+esc(pu.phone||'—')+' • اسم مستخدم: <b>'+esc(pu.username)+'</b> • تاريخ: '+fmtDate(pu.created)+'</div>'+
+        '</div>'+
+        '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+          '<button class="btn green small" onclick="approveUser(\''+pu.id+'\',\'servant\')">✅ موافقة كـ خادم</button>'+
+          '<button class="btn primary small" onclick="approveUser(\''+pu.id+'\',\'member\')">✅ موافقة كـ مخدوم</button>'+
+          '<button class="btn red small" onclick="rejectUser(\''+pu.id+'\')">❌ رفض وحذف</button>'+
+        '</div>'+
+      '</div>';
+    }
+    pendingHTML = '<div class="card" style="border:2px solid #f59e0b;background:#fffdfa">'+
+      '<h3 style="color:#b45309">⏳ طلبات التسجيل الجديدة المعلقة بانتظار موافقة الأمينة ('+pendingUsers.length+')</h3>'+
+      '<p class="hint" style="text-align:right;margin-bottom:14px">الطلبات المسجلة من الهواتف تظهر هنا فوراً. لن يتمكن أصحابها من الدخول إلا بعد الضغط على زر الموافقة.</p>'+
+      cards+
+    '</div>';
+  } else {
+    pendingHTML = '<div class="card" style="border-right:5px solid #10b981">'+
+      '<h3 style="color:#059669;margin:0">✅ لا توجد طلبات معلقة</h3>'+
+      '<p style="color:#6b6880;font-size:13.5px;margin-top:6px">كافة الحسابات معتمدة ومفعلة بالكامل.</p>'+
+    '</div>';
+  }
+
+  var activeHTML = '';
+  for(var a=0;a<activeUsers.length;a++){
+    var au = activeUsers[a];
+    activeHTML += '<div class="card" style="padding:14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">'+
+      '<div><b>'+esc(au.name)+'</b> ('+roleLabel(au.role)+')<div style="font-size:12px;color:#6b6880">📱 '+esc(au.phone||'—')+' • '+esc(au.username)+'</div></div>'+
+      '<div style="display:flex;gap:6px">'+
+        (au.username!=='amena'?'<button class="btn ghost small" onclick="deactivateUser(\''+au.id+'\')">⛔ إيقاف</button><button class="btn red small" onclick="delUser(\''+au.id+'\')">🗑️</button>':'<span class="tag" style="background:#d1fae5;color:#065f46">حساب الإدارة الرئيسي</span>')+
+      '</div>'+
+    '</div>';
+  }
+
+  v.innerHTML = pendingHTML +
+    '<div class="card">'+
+      '<div class="card-head"><h3 style="margin:0">👥 الحسابات النشطة والمفعلة ('+activeUsers.length+')</h3>'+
+      '<button class="btn green small" onclick="downloadCurrentSource()">📥 تنزيل كود المنصة بالكامل</button></div>'+
+      activeHTML+
+    '</div>';
+}
+
+function approveUser(userId, role){
+  var users = get('users', []);
+  var targetUser = null;
+  for(var i=0;i<users.length;i++){
+    if(users[i].id === userId){
+      users[i].status = 'active';
+      users[i].active = true;
+      users[i].role = role;
+      targetUser = users[i];
+      break;
+    }
+  }
+  set('users', users);
+
+  // تحديث سجل المخدومين
+  var members = get('members', []);
+  for(var m=0;m<members.length;m++){
+    if(members[m].userId === userId){
+      members[m].status = 'active';
+      members[m].role = role;
+      break;
+    }
+  }
+  set('members', members);
+
+  // إشعار
+  if(targetUser){
+    var notifs = get('notifs', []);
+    notifs.push({
+      id: uid(),
+      title: 'تم اعتماد حساب — ' + targetUser.name,
+      body: '🎉 تمت الموافقة على تفعيل حساب ' + targetUser.name + ' كـ ' + roleLabel(role) + ' بواسطة ' + state.user.name,
+      audience: 'servants',
+      author: state.user.name,
+      date: Date.now()
+    });
+    set('notifs', notifs);
+  }
+
+  toast('✅ تم اعتماد وتفعيل حساب ' + (targetUser ? targetUser.name : '') + ' كـ ' + roleLabel(role));
+  render();
+}
+
+function approveUserDirect(userId, role){
+  if(!userId){ alert('هذا السجل غير مرتبط بحساب دخول'); return; }
+  approveUser(userId, role);
+}
+
+function rejectUser(userId){
+  if(!confirm('هل أنت متأكد من رفض وحذف هذا الطلب نهائياً؟')) return;
+  set('users', get('users', []).filter(function(u){ return u.id !== userId; }));
+  set('members', get('members', []).filter(function(m){ return m.userId !== userId; }));
+  toast('🗑️ تم رفض وحذف الطلب');
+  render();
+}
+
+function deactivateUser(userId){
+  var users = get('users', []);
+  for(var i=0;i<users.length;i++){
+    if(users[i].id === userId){
+      users[i].active = false;
+      users[i].status = 'pending';
+      break;
+    }
+  }
+  set('users', users);
+  toast('⛔ تم إيقاف الحساب وتحويله لطلبات الانتظار');
+  render();
+}
+
+function delUser(userId){
+  if(!confirm('حذف هذا الحساب نهائياً؟')) return;
+  set('users', get('users', []).filter(function(u){ return u.id !== userId; }));
+  set('members', get('members', []).filter(function(m){ return m.userId !== userId; }));
+  toast('🗑️ تم الحذف');
+  render();
+}
+
+try { init(); } catch(err){ document.getElementById('fatalError').style.display = 'block'; document.getElementById('fatalError').textContent = '⚠️ خطأ: ' + err.message; }
+</script>
+</body>
+</html>
