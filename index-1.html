@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⛪ كنيسة الأنبا صموئيل المعترف بأبيس الثورة - اجتماع الخميس أسرة القديسة فيرينا</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-auth-compat.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#5b21b6;
+  --primary-light:#7c3aed;
+  --primary-subtle:#ede9fe;
+  --accent:#d97706;
+  --accent-light:#f59e0b;
+  --success:#059669;
+  --success-light:#10b981;
+  --danger:#dc2626;
+  --text:#1e1b4b;
+  --text-2:#4c4870;
+  --text-3:#8683a3;
+  --border:#e4def2;
+  --border-2:#d4cbe8;
+  --bg-page:#f8f6fc;
+  --shadow-sm:0 2px 8px rgba(91,33,182,.06);
+  --shadow-md:0 8px 24px rgba(91,33,182,.10);
+  --shadow-lg:0 16px 40px rgba(91,33,182,.16);
+  --radius:16px;
+  --radius-lg:22px;
+  --radius-pill:999px;
+}
+html,body{height:100%}
+body{font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;background:linear-gradient(135deg,#f5f2fb 0%,#fbf7f0 100%);background-attachment:fixed;color:var(--text);line-height:1.7;min-height:100vh}
+.hidden{display:none!important}
+h2,h3,h4{font-weight:800}
+input,select,textarea,button{font-family:inherit;font-size:14.5px;color:inherit}
+input,select,textarea{padding:11px 14px;border:1.5px solid var(--border-2);border-radius:12px;width:100%;background:#fbfaff;transition:.2s;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--primary-light);background:#fff;box-shadow:0 0 0 4px rgba(124,58,237,.12)}
+label{display:block;margin-bottom:12px;font-size:13.5px;font-weight:700;color:var(--text-2)}
+label input,label select,label textarea{margin-top:6px;font-weight:500}
+.pw-wrap{position:relative;display:flex;align-items:center}
+.pw-wrap input{padding-left:42px}
+.pw-toggle{position:absolute;left:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:var(--text-3);padding:4px;display:flex;align-items:center;justify-content:center;transition:.2s}
+.pw-toggle:hover{color:var(--primary)}
+.btn{padding:11px 20px;border:none;border-radius:12px;cursor:pointer;font-weight:700;font-size:14px;transition:.2s;background:#ede9fe;color:var(--text);display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.btn.primary{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;box-shadow:0 6px 18px rgba(91,33,182,.28)}
+.btn.green{background:linear-gradient(135deg,#059669,#10b981);color:#fff}
+.btn.amber{background:linear-gradient(135deg,#d97706,#f59e0b);color:#fff}
+.btn.red{background:linear-gradient(135deg,#dc2626,#ef4444);color:#fff}
+.btn.ghost{background:transparent;border:1.5px solid var(--border-2);color:var(--text-2)}
+.btn.small{padding:7px 14px;font-size:12.5px;border-radius:10px}
+.btn.block{width:100%;margin-top:10px;padding:12px}
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;position:relative;overflow:hidden;background:linear-gradient(135deg,#2e1065,#5b21b6 40%,#7c3aed)}
+.auth-card{position:relative;z-index:2;background:rgba(255,255,255,.98);padding:34px 30px;border-radius:26px;width:100%;max-width:540px;box-shadow:0 30px 80px rgba(0,0,0,.35);max-height:92vh;overflow-y:auto}
+.auth-card .brand{text-align:center;font-size:22px;font-weight:900;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:4px}
+.auth-card .subtitle{text-align:center;font-size:13px;color:var(--text-2);font-weight:700;margin-bottom:14px}
+.auth-card .divider{width:60px;height:3px;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:3px;margin:10px auto 20px}
+.err{background:linear-gradient(135deg,#fee2e2,#fecaca);color:#991b1b;padding:12px 16px;border-radius:12px;font-size:13.5px;font-weight:600;margin-bottom:14px;border-right:4px solid var(--danger)}
+.topbar{background:linear-gradient(135deg,#2e1065,#5b21b6 50%,#7c3aed);color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;flex-wrap:wrap;gap:12px;box-shadow:0 4px 18px rgba(46,16,101,.2)}
+.topbar .brand{font-weight:900;font-size:17px;display:flex;align-items:center;gap:8px}
+.top-actions{display:flex;align-items:center;gap:10px}
+.chip{background:rgba(255,255,255,.16);padding:7px 15px;border-radius:var(--radius-pill);font-size:13px;font-weight:700;border:1px solid rgba(255,255,255,.25)}
+.bell{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:18px;width:42px;height:42px;border-radius:50%;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center}
+.badge{position:absolute;top:-4px;left:-4px;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-size:11px;font-weight:800;min-width:20px;height:20px;border-radius:10px;display:flex;align-items:center;justify-content:center;padding:0 5px}
+.tabs{display:flex;gap:10px;overflow-x:auto;padding:13px 22px;background:rgba(255,255,255,.9);border-bottom:1px solid var(--border);position:sticky;top:70px;z-index:40;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{white-space:nowrap;padding:9px 18px;border-radius:var(--radius-pill);border:1.5px solid transparent;background:#f3eeff;cursor:pointer;font-weight:700;font-size:13.5px;color:var(--text-2);transition:.2s}
+.tabs button.active{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;box-shadow:0 6px 16px rgba(91,33,182,.3)}
+.view{padding:24px;max-width:1180px;margin:0 auto}
+.card{background:#fff;border-radius:var(--radius-lg);padding:22px;margin-bottom:18px;box-shadow:var(--shadow-sm);border:1px solid var(--border);transition:.2s}
+.card:hover{box-shadow:var(--shadow-md)}
+.card h3{font-size:16.5px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.grid-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px}
+.stat{border-radius:var(--radius);padding:20px 18px;text-align:center;color:#fff;position:relative;overflow:hidden;box-shadow:var(--shadow-md);transition:.25s}
+.stat:hover{transform:translateY(-3px)}
+.stat:nth-child(1){background:linear-gradient(135deg,#7c3aed,#a78bfa)}
+.stat:nth-child(2){background:linear-gradient(135deg,#0891b2,#22d3ee)}
+.stat:nth-child(3){background:linear-gradient(135deg,#d97706,#fbbf24)}
+.stat:nth-child(4){background:linear-gradient(135deg,#059669,#10b981)}
+.stat-num{font-size:32px;font-weight:900}
+.stat-lbl{font-size:12.5px;font-weight:700;opacity:.92;margin-top:2px}
+.month-bar{display:flex;gap:8px;overflow-x:auto;padding:8px 0 16px;scrollbar-width:none}
+.month-btn{padding:8px 16px;border-radius:var(--radius-pill);border:1.5px solid var(--border-2);background:#fff;cursor:pointer;font-weight:700;font-size:13px;color:var(--text-2);white-space:nowrap}
+.month-btn.active{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(91,33,182,.25)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:12px}
+.cal-head{text-align:center;font-weight:800;font-size:12px;color:var(--text-3);padding:6px 0}
+.cal-day{min-height:85px;background:#faf9fd;border-radius:12px;border:1px solid var(--border);padding:8px;display:flex;flex-direction:column;justify-content:space-between;transition:.2s}
+.cal-day:hover{border-color:var(--primary-light);background:#fff}
+.cal-day.thursday{background:#f5f0ff;border-color:#d8b4fe}
+.cal-day.today{border:2px solid var(--primary);background:#fff}
+.cal-tag{font-size:10.5px;padding:2px 6px;border-radius:6px;font-weight:800;margin-top:4px;display:inline-block;text-align:center}
+.cal-tag.meeting{background:#ede9fe;color:#5b21b6}
+.cal-tag.feast{background:#fef3c7;color:#92400e}
+.thursday-card{background:#fff;border-radius:16px;border:1.5px solid var(--border);padding:16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;transition:.2s}
+.thursday-card:hover{border-color:var(--primary-light);box-shadow:var(--shadow-sm)}
+.thursday-card.active-meet{border-right:6px solid #5b21b6;background:linear-gradient(135deg,#fff,#faf7ff)}
+.table-wrap{overflow-x:auto;max-height:520px;overflow-y:auto;border-radius:14px;border:1px solid var(--border);background:#fff}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{padding:12px 14px;text-align:right;border-bottom:1px solid var(--border)}
+th{background:#faf8ff;color:var(--text-2);font-size:12px;font-weight:800;white-space:nowrap}
+tr:hover td{background:#fcfbff}
+.att-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border);gap:12px;flex-wrap:wrap}
+.att-opts{display:flex;gap:6px;flex-wrap:wrap}
+.att-opts label{display:flex;align-items:center;gap:4px;margin:0;padding:6px 12px;border:1.5px solid var(--border-2);border-radius:var(--radius-pill);cursor:pointer;font-size:12px;background:#fff;font-weight:700;color:var(--text-2)}
+.att-opts input{display:none}
+.att-opts label.on.present{background:linear-gradient(135deg,#059669,#10b981);color:#fff;border-color:transparent}
+.att-opts label.on.late{background:linear-gradient(135deg,#d97706,#f59e0b);color:#fff;border-color:transparent}
+.att-opts label.on.excused{background:linear-gradient(135deg,#0891b2,#22d3ee);color:#fff;border-color:transparent}
+.att-opts label.on.absent{background:linear-gradient(135deg,#dc2626,#ef4444);color:#fff;border-color:transparent}
+.points-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:var(--radius-pill);font-weight:800;font-size:12px;color:#fff}
+.points-badge.green{background:linear-gradient(135deg,#059669,#10b981)}
+.points-badge.blue{background:linear-gradient(135deg,#2563eb,#3b82f6)}
+.points-badge.red{background:linear-gradient(135deg,#dc2626,#ef4444)}
+.point-action{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.point-action button{padding:16px 12px;border-radius:16px;border:none;cursor:pointer;font-weight:800;font-size:15px;color:#fff;display:flex;flex-direction:column;align-items:center;gap:6px}
+.point-action button.green-btn{background:linear-gradient(135deg,#059669,#10b981)}
+.point-action button.blue-btn{background:linear-gradient(135deg,#2563eb,#3b82f6)}
+.point-action button.red-btn{background:linear-gradient(135deg,#dc2626,#ef4444)}
+.tree-box{text-align:center;background:linear-gradient(180deg,#f5f2fb,#fdf6ec);border-radius:20px;padding:16px;border:1.5px solid var(--border)}
+.big-points{font-size:48px;font-weight:900;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.1;margin-top:6px}
+.progress{height:12px;background:#ede9fe;border-radius:var(--radius-pill);overflow:hidden;margin:12px 0 8px}
+.progress>div{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:var(--radius-pill);transition:.5s}
+.notif{border-radius:16px;background:#fff;padding:16px 18px;margin-bottom:12px;box-shadow:var(--shadow-sm);border:1px solid var(--border);border-right:5px solid var(--primary-light)}
+.notif.unread{background:linear-gradient(135deg,#fffbeb,#fef3c7);border-right-color:var(--accent)}
+.modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(30,27,75,.6);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal-box{background:#fff;border-radius:22px;padding:26px;max-width:540px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#1e1b4b,#3b2d71);color:#fff;padding:12px 22px;border-radius:14px;z-index:9999;font-weight:700;box-shadow:0 12px 32px rgba(0,0,0,.35)}
+.avatar-placeholder{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;border:2px solid #fff}
+.live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-left:6px;box-shadow:0 0 8px #10b981;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.role-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:800}
+.role-chip.member{background:#dbeafe;color:#1e40af}
+.role-chip.servant{background:#fef3c7;color:#92400e}
+.role-chip.leader{background:#d1fae5;color:#065f46}
+.role-chip.admin{background:#fee2e2;color:#991b1b}
+.banner-church{background:linear-gradient(135deg,#ede9fe,#fef3c7);border:1.5px solid #ddd6fe;border-radius:16px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+</style>
+</head>
+<body>
+
+<div id="loadingScreen" class="auth-wrap"><div style="color:#fff;font-weight:800;font-size:18px;text-align:center">⛪ جارٍ التحميل...</div></div>
+
+<div id="authScreen" class="auth-wrap hidden">
+  <div class="auth-card">
+    <div class="brand">⛪ كنيسة الأنبا صموئيل المعترف بأبيس الثورة</div>
+    <div class="subtitle">اجتماع الخميس أسرة القديسة فيرينا</div>
+    <div class="divider"></div>
+    <div id="loginBox">
+      <h2 style="font-size:17px;margin-bottom:16px;text-align:center;color:var(--text-2)">تسجيل الدخول</h2>
+      <div id="loginErr" class="err" style="display:none"></div>
+      <form id="loginForm" autocomplete="off">
+        <label>اسم المستخدم
+          <input name="username" required placeholder="اسم المستخدم (إنجليزي)" autocomplete="username" autocorrect="off" autocapitalize="off" spellcheck="false" dir="ltr">
+        </label>
+        <label>كلمة المرور
+          <div class="pw-wrap">
+            <input type="password" id="loginPw" name="password" required placeholder="••••••••" autocomplete="current-password">
+            <button type="button" class="pw-toggle" onclick="togglePw('loginPw', this)" title="إظهار / إخفاء">👁️</button>
+          </div>
+        </label>
+        <button class="btn primary block" type="submit">دخول</button>
+      </form>
+      <button class="btn ghost block" onclick="showRegister()">تسجيل بيانات جديدة</button>
+    </div>
+    <div id="registerBox" style="display:none">
+      <h2 style="font-size:17px;margin-bottom:16px;text-align:center;color:var(--text-2)">📝 تسجيل بيانات جديدة</h2>
+      <div id="regErr" class="err" style="display:none"></div>
+      <form id="registerForm" autocomplete="off">
+        <label>الاسم بالكامل *<input name="name" required autocomplete="off"></label>
+        <label>اسم المستخدم * (حروف إنجليزية صغيرة وأرقام فقط، 3 أحرف فأكثر)<input name="username" required autocomplete="off" dir="ltr" pattern="[a-zA-Z0-9._\-]{3,30}" autocapitalize="off"></label>
+        <label>كلمة المرور * (6 أحرف على الأقل)
+          <div class="pw-wrap">
+            <input type="password" id="regPw" name="password" required minlength="6" autocomplete="new-password">
+            <button type="button" class="pw-toggle" onclick="togglePw('regPw', this)">👁️</button>
+          </div>
+        </label>
+        <label>تأكيد كلمة المرور *
+          <div class="pw-wrap">
+            <input type="password" id="regPw2" name="password2" required minlength="6" autocomplete="new-password">
+            <button type="button" class="pw-toggle" onclick="togglePw('regPw2', this)">👁️</button>
+          </div>
+        </label>
+        <label>رقم الهاتف *<input name="phone" required placeholder="01xxxxxxxxx" inputmode="tel"></label>
+        <label>أب الاعتراف<input name="confessionFather" placeholder="اسم أب الاعتراف"></label>
+        <label>المرحلة التعليمية / الوظيفة<input name="jobOrEdu" placeholder="مثال: جامعي / مهندس"></label>
+        <button class="btn primary block" type="submit">✅ إنشاء الحساب</button>
+      </form>
+      <button class="btn ghost block" onclick="showLogin()">رجوع</button>
+    </div>
+  </div>
+</div>
+
+<div id="appScreen" class="hidden">
+  <header class="topbar">
+    <div class="brand">
+      <span>⛪ كنيسة الأنبا صموئيل المعترف - اجتماع الخميس أسرة فيرينا</span>
+      <span class="live-dot" title="متصل ومزامن"></span>
+    </div>
+    <div class="top-actions">
+      <button id="topSendBtn" class="btn amber small hidden" onclick="openSendNotifModal()">📢 إرسال إشعار</button>
+      <button class="bell" onclick="go('notifications')">🔔<span id="bellBadge" class="badge" style="display:none">0</span></button>
+      <span id="userChip" class="chip"></span>
+      <button class="btn small ghost" style="color:#fff;border-color:rgba(255,255,255,.3)" onclick="logout()">خروج</button>
+    </div>
+  </header>
+  <nav id="tabs" class="tabs"></nav>
+  <main id="view" class="view"></main>
+</div>
+<div id="modalRoot"></div>
+<script>
+var firebaseConfig = {
+  apiKey: "AIzaSyDopFwnPp3oS2UnMXt9YEHGOLFQmpR4-Dk",
+  authDomain: "stmariam-1fdc0.firebaseapp.com",
+  databaseURL: "https://stmariam-1fdc0-default-rtdb.firebaseio.com",
+  projectId: "stmariam-1fdc0",
+  storageBucket: "stmariam-1fdc0.firebasestorage.app",
+  messagingSenderId: "105645960370",
+  appId: "1:105645960370:web:cb11fb7fc5bbea9cbdedab"
+};
+var DOM = '@church-app.local', ROOT = 'chm_samuel/';
+var auth, fdb, TS;
+var DEF_SETTINGS = { pPresent:10, pLate:5, pExcused:1, pAbsent:0 };
+var cache = emptyCache();
+var state = { user:null, tab:'home', pointMember:null, selectedMonth:new Date().getMonth(), selectedYear:new Date().getFullYear(), attDate:null, registering:false, loginMsg:'' };
+var listeners = [];
+var AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+
+function emptyCache(){ return { users:[], members:[], attendance:{}, points:{}, thursdays:[], notifs:[], settings:Object.assign({}, DEF_SETTINGS) }; }
+function $(s){ return document.querySelector(s); }
+function esc(s){ if(s===undefined||s===null) return ''; return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function pad(n){ return String(n).padStart(2,'0'); }
+function todayStr(){ var d=new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function fmtDate(ts){ return new Date(ts).toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'}); }
+function initial(n){ return n && n.length ? n.charAt(0) : '؟'; }
+function toast(msg){ var t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(function(){ if(t.parentNode) t.parentNode.removeChild(t); },3000); }
+function toArr(o){ var a=[]; if(!o||typeof o!=='object') return a; Object.keys(o).forEach(function(k){ var v=o[k]; if(v&&typeof v==='object'){ v.id=k; a.push(v); } }); return a; }
+function newId(path){ return fdb.ref(ROOT+path).push().key; }
+function isStaff(){ return !!state.user && (state.user.role==='admin' || state.user.role==='leader'); }
+function isAdmin(){ return !!state.user && state.user.role==='admin'; }
+function roleLabel(r){ return r==='admin'?'👑 مشرف عام':r==='leader'?'💼 أمينة الخدمة':'👤 مخدوم'; }
+function togglePw(id, btn){ var el=document.getElementById(id); if(!el) return; if(el.type==='password'){ el.type='text'; btn.textContent='🙈'; } else { el.type='password'; btn.textContent='👁️'; } }
+function memberPoints(id){ var o=cache.points[id], t=0; if(o) Object.keys(o).forEach(function(k){ t += (+o[k].points||0); }); return t; }
+function authMsg(e){
+  var c = (e && e.code) || '';
+  if(/invalid-credential|user-not-found|wrong-password|invalid-email/.test(c)) return 'اسم المستخدم أو كلمة المرور غير صحيحة';
+  if(c==='auth/too-many-requests') return 'محاولات كثيرة، حاول لاحقًا';
+  if(c==='auth/network-request-failed') return 'تعذر الاتصال بالإنترنت';
+  if(c==='auth/email-already-in-use') return 'اسم المستخدم مسجل مسبقًا';
+  if(c==='auth/weak-password') return 'كلمة المرور ضعيفة (6 أحرف على الأقل)';
+  if(c==='auth/operation-not-allowed') return 'فعّل تسجيل الدخول بالبريد وكلمة المرور من Firebase Console';
+  return 'حدث خطأ: ' + ((e && e.message) || c);
+}
+function showErr(id, msg){ var el=$(id); el.textContent=(msg.charAt(0)==='✅'?'':'⚠️ ')+msg; el.style.display='block'; }
+
+/* ============ التشغيل والمصادقة ============ */
+function boot(){
+  if(typeof firebase==='undefined'){ $('#loadingScreen').innerHTML='<div style="color:#fff;font-weight:800;text-align:center">⚠️ تعذر تحميل Firebase. تحقق من الإنترنت ثم أعد التحميل.</div>'; return; }
+  firebase.initializeApp(firebaseConfig);
+  auth = firebase.auth(); fdb = firebase.database(); TS = firebase.database.ServerValue.TIMESTAMP;
+  auth.onAuthStateChanged(onAuth);
+}
+function onAuth(fu){
+  if(state.registering) return;
+  detach();
+  if(!fu){ state.user=null; showLogin(); return; }
+  fdb.ref(ROOT+'users/'+fu.uid).once('value').then(function(s){
+    var u=s.val();
+    if(!u){ state.loginMsg='الحساب غير مسجل في النظام'; return auth.signOut(); }
+    if(u.active!==true){ state.loginMsg='الحساب بانتظار موافقة الإدارة'; return auth.signOut(); }
+    u.id=fu.uid; state.user=u; attach(); showApp();
+  }).catch(function(e){ state.loginMsg='تعذر تحميل بيانات الحساب: '+e.message; auth.signOut(); });
+}
+function showLogin(){
+  $('#loadingScreen').classList.add('hidden');
+  $('#appScreen').classList.add('hidden');
+  $('#authScreen').classList.remove('hidden');
+  $('#loginBox').style.display='block'; $('#registerBox').style.display='none';
+  if(state.loginMsg) showErr('#loginErr', state.loginMsg); else $('#loginErr').style.display='none';
+}
+function showRegister(){ $('#loginBox').style.display='none'; $('#registerBox').style.display='block'; $('#regErr').style.display='none'; }
+function logout(){ auth.signOut(); }
+
+document.getElementById('loginForm').addEventListener('submit', function(e){
+  e.preventDefault(); state.loginMsg=''; $('#loginErr').style.display='none';
+  var u=this.username.value.trim().toLowerCase(), p=this.password.value, f=this;
+  auth.signInWithEmailAndPassword(u+DOM, p).then(function(){ f.reset(); }).catch(function(err){ showErr('#loginErr', authMsg(err)); });
+});
+document.getElementById('registerForm').addEventListener('submit', function(e){
+  e.preventDefault(); $('#regErr').style.display='none';
+  var f=this, username=f.username.value.trim().toLowerCase();
+  if(!/^[a-z0-9._-]{3,30}$/.test(username)){ showErr('#regErr','اسم المستخدم: حروف إنجليزية وأرقام فقط (3 إلى 30)'); return; }
+  if(f.password.value!==f.password2.value){ showErr('#regErr','كلمتا المرور غير متطابقتين'); return; }
+  if(f.password.value.length<6){ showErr('#regErr','كلمة المرور 6 أحرف على الأقل'); return; }
+  state.registering=true;
+  var uid;
+  auth.createUserWithEmailAndPassword(username+DOM, f.password.value).then(function(c){
+    uid=c.user.uid;
+    var up={};
+    up['users/'+uid]={ name:f.name.value.trim(), username:username, role:'member', active:false, created:TS };
+    up['members/'+uid]={ userId:uid, name:f.name.value.trim(), phone:f.phone.value.trim(), confessionFather:f.confessionFather.value.trim(), jobOrEdu:f.jobOrEdu.value.trim(), role:'member', created:TS };
+    return fdb.ref(ROOT).update(up);
+  }).then(function(){
+    f.reset(); state.loginMsg='✅ تم التسجيل. حسابك بانتظار موافقة الإدارة.';
+    return auth.signOut();
+  }).catch(function(err){
+    showErr('#regErr', authMsg(err)); return auth.signOut();
+  }).then(function(){ state.registering=false; showLogin(); });
+});
+
+/* ============ المزامنة الحية ============ */
+function listen(path, cb){
+  var ref=fdb.ref(ROOT+path);
+  var fn=ref.on('value', function(s){ cb(s.val()); scheduleRender(); }, function(err){ console.warn(path, err.message); });
+  listeners.push([ref,fn]);
+}
+function detach(){ state.knownNotifs=null; listeners.forEach(function(l){ l[0].off('value', l[1]); }); listeners=[]; cache=emptyCache(); }
+function attach(){
+  listen('thursdays', function(v){ cache.thursdays=toArr(v); });
+  listen('notifs', function(v){
+    var arr=toArr(v).sort(function(a,b){ return (b.date||0)-(a.date||0); });
+    if(state.knownNotifs){
+      arr.forEach(function(n){
+        if(state.knownNotifs[n.id]) return;
+        if(n.audience==='servants' && !isStaff()) return;
+        if(n.author===state.user.name) return;
+        toast('🔔 '+n.title);
+        try{ if(navigator.vibrate) navigator.vibrate([200,100,200]); }catch(e){}
+      });
+    }
+    state.knownNotifs={}; arr.forEach(function(n){ state.knownNotifs[n.id]=1; });
+    cache.notifs=arr;
+  });
+  listen('settings', function(v){ cache.settings=Object.assign({}, DEF_SETTINGS, v||{}); });
+  if(isStaff()){
+    listen('users', function(v){ cache.users=toArr(v); });
+    listen('members', function(v){ cache.members=toArr(v).sort(function(a,b){ return String(a.name).localeCompare(String(b.name),'ar'); }); });
+    listen('attendance', function(v){ cache.attendance=v||{}; });
+    listen('points', function(v){ cache.points=v||{}; });
+  } else {
+    var id=state.user.id;
+    listen('members/'+id, function(v){ cache.members = v ? [Object.assign({id:id}, v)] : []; });
+    listen('points/'+id, function(v){ cache.points = v ? (function(){ var o={}; o[id]=v; return o; })() : {}; });
+  }
+}
+function scheduleRender(){
+  if(!state.user) return;
+  var ae=document.activeElement, typing = ae && /INPUT|TEXTAREA|SELECT/.test(ae.tagName);
+  if(state.tab==='attendance' || typing || $('#modalRoot').innerHTML){ updateBell(); return; }
+  render();
+}
+
+/* ============ الواجهة العامة ============ */
+function tabsFor(){
+  var t=[{id:'home',label:'🏠 الرئيسية'},{id:'calendar',label:'📅 التقويم وأجندة الخميس'}];
+  if(isStaff()){ t.push({id:'attendance',label:'✅ تسجيل الحضور'},{id:'members',label:'👥 المخدومين والافتقاد'}); }
+  t.push({id:'points',label:'⭐ شجرة النمو والنقاط'},{id:'notifications',label:'🔔 الإشعارات'});
+  if(isStaff()) t.push({id:'admin',label:'⚙️ الإدارة والصلاحيات'});
+  return t;
+}
+function showApp(){
+  $('#loadingScreen').classList.add('hidden'); $('#authScreen').classList.add('hidden'); $('#appScreen').classList.remove('hidden');
+  $('#userChip').textContent = state.user.name+' ('+roleLabel(state.user.role)+')';
+  $('#topSendBtn').classList.toggle('hidden', !isStaff());
+  state.tab='home'; state.attDate=null; state.pointMember=null;
+  render();
+}
+function renderTabs(){
+  $('#tabs').innerHTML = tabsFor().map(function(t){ return '<button class="'+(state.tab===t.id?'active':'')+'" onclick="go(\''+t.id+'\')">'+t.label+'</button>'; }).join('');
+}
+function go(t){ state.tab=t; if(t==='notifications') markSeen(); render(); window.scrollTo({top:0,behavior:'smooth'}); }
+function render(){
+  if(!state.user) return;
+  var allowed = tabsFor().some(function(t){ return t.id===state.tab; });
+  if(!allowed) state.tab='home';
+  renderTabs(); updateBell();
+  var v=$('#view');
+  ({home:viewHome, calendar:viewCalendar, attendance:viewAttendance, members:viewMembers, points:viewPoints, notifications:viewNotifications, admin:viewAdmin})[state.tab](v);
+}
+function closeModal(){ $('#modalRoot').innerHTML=''; }
+function seenKey(){ return 'chm_seen_'+state.user.id; }
+function markSeen(){ try{ localStorage.setItem(seenKey(), String(Date.now())); }catch(e){} }
+function visibleNotifs(){ return cache.notifs.filter(function(n){ return isStaff() || n.audience!=='servants'; }); }
+function updateBell(){
+  var seen=0; try{ seen=+localStorage.getItem(seenKey())||0; }catch(e){}
+  var c = visibleNotifs().filter(function(n){ return (n.date||0)>seen; }).length;
+  var b=$('#bellBadge'); b.textContent=c; b.style.display = (c && state.tab!=='notifications') ? 'flex' : 'none';
+}
+function card(inner){ return '<div class="card">'+inner+'</div>'; }
+
+/* ============ 🏠 الرئيسية ============ */
+function viewHome(v){
+  var staff=isStaff(), today=todayStr(), ym=today.slice(0,7);
+  var day=cache.attendance[today]||{}, presToday=0;
+  Object.keys(day).forEach(function(k){ if(day[k].status==='present') presToday++; });
+  var monthCount=cache.thursdays.filter(function(t){ return String(t.date).slice(0,7)===ym; }).length;
+  var notifs=visibleNotifs();
+  var next=cache.thursdays.filter(function(t){ return t.date>=today; }).sort(function(a,b){ return a.date<b.date?-1:1; })[0];
+  var pending=cache.users.filter(function(u){ return u.active!==true; }).length;
+  var stats = staff
+    ? [[cache.members.length,'إجمالي المخدومين'],[presToday,'حضور اليوم'],[monthCount,'لقاءات الخميس هذا الشهر'],[notifs.length,'الإشعارات والتنبيهات']]
+    : [[memberPoints(state.user.id),'نقاطي'],[monthCount,'لقاءات الخميس هذا الشهر'],[notifs.length,'الإشعارات والتنبيهات']];
+  v.innerHTML =
+    '<div class="banner-church"><div>' +
+      '<h3 style="color:#5b21b6;margin-bottom:4px">⛪ كنيسة الأنبا صموئيل المعترف بأبيس الثورة</h3>' +
+      '<div style="font-weight:700;color:#6b6880;font-size:13.5px">اجتماع الخميس أسرة القديسة فيرينا - مرحبًا '+esc(state.user.name)+'</div>' +
+    '</div>' + (staff ? '<button class="btn amber" onclick="openSendNotifModal()">📢 إرسال إشعار</button>' : '') + '</div>' +
+    (staff && pending ? card('<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><b>🆕 '+pending+' حساب بانتظار الموافقة</b><button class="btn primary small" onclick="go(\'admin\')">مراجعة الطلبات ←</button></div>') : '') +
+    '<div class="grid-stats">' + stats.map(function(s){ return '<div class="stat"><div class="stat-num">'+s[0]+'</div><div class="stat-lbl">'+s[1]+'</div></div>'; }).join('') + '</div>' +
+    card('<h3>📅 أقرب لقاء قادم (اجتماع الخميس)</h3>' + (next
+      ? '<div class="thursday-card active-meet"><div>' +
+          '<div style="font-size:12px;color:#5b21b6;font-weight:800">📅 '+esc(next.date)+'</div>' +
+          '<div style="font-size:16px;font-weight:800;margin:4px 0">«'+esc(next.title)+'»</div>' +
+          '<div style="font-size:13px;color:#4c4870">👤 المتكلم: '+esc(next.servant)+'</div></div>' +
+          '<button class="btn primary small" onclick="go(\'calendar\')">عرض الجدول ←</button></div>'
+      : '<p style="text-align:center;color:#8683a3;padding:16px">لا توجد لقاءات قادمة مسجلة</p>')) +
+    card('<h3>🔔 أحدث الإشعارات</h3>' + (notifs.length ? notifs.slice(0,3).map(function(n){ return '<div class="notif"><h4>🔔 '+esc(n.title)+'</h4><p>'+esc(n.body)+'</p><small style="color:#8683a3">بواسطة: '+esc(n.author)+'</small></div>'; }).join('') : '<p style="text-align:center;color:#8683a3;padding:16px">لا توجد إشعارات</p>'));
+}
+
+/* ============ 📅 التقويم ============ */
+function viewCalendar(v){
+  var staff=isStaff(), mi=state.selectedMonth, yr=state.selectedYear;
+  var ym=yr+'-'+pad(mi+1);
+  var list=cache.thursdays.filter(function(t){ return String(t.date).slice(0,7)===ym; }).sort(function(a,b){ return a.date<b.date?-1:1; });
+  var cy=new Date().getFullYear(), yOpts='';
+  for(var y=cy-1;y<=cy+2;y++) yOpts+='<option value="'+y+'" '+(y===yr?'selected':'')+'>'+y+'</option>';
+  var months='<div class="month-bar">'+AR_MONTHS.map(function(m,i){ return '<button class="month-btn '+(i===mi?'active':'')+'" onclick="setMonth('+i+')">'+m+'</button>'; }).join('')+'</div>';
+  var items=list.map(function(th){
+    return '<div class="thursday-card"><div>' +
+      '<div style="font-size:12px;color:#5b21b6;font-weight:800">📅 '+esc(th.date)+' • <span style="background:#ede9fe;padding:2px 8px;border-radius:999px">'+esc(th.status)+'</span></div>' +
+      '<div style="font-size:15px;font-weight:800;margin:4px 0">📖 «'+esc(th.title)+'»</div>' +
+      '<div style="font-size:13px;color:#4c4870">👤 الخادم / المتكلم: '+esc(th.servant)+'</div></div>' +
+      (staff ? '<button class="btn small ghost" onclick="openThursdayModal(\''+th.id+'\')">✏️ تعديل</button>' : '') + '</div>';
+  }).join('') || '<p style="text-align:center;color:#8683a3;padding:20px">لا توجد لقاءات في هذا الشهر</p>';
+  v.innerHTML = card(
+    '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px">' +
+      '<h3 style="margin:0">📅 التقويم وجدول لقاءات الخميس</h3>' +
+      '<div style="display:flex;gap:8px;align-items:center"><select style="width:auto" onchange="setYear(this.value)">'+yOpts+'</select>' +
+      (staff ? '<button class="btn primary small" onclick="openThursdayModal()">➕ لقاء جديد</button>' : '') + '</div></div>' +
+    months + '<div style="margin-top:16px"><h4 style="color:#5b21b6;margin-bottom:12px">📖 لقاءات '+AR_MONTHS[mi]+' '+yr+':</h4>'+items+'</div>');
+}
+function setMonth(i){ state.selectedMonth=i; render(); }
+function setYear(y){ state.selectedYear=+y; render(); }
+function openThursdayModal(id){
+  if(!isStaff()) return;
+  var th = id ? cache.thursdays.filter(function(t){ return t.id===id; })[0] : null;
+  if(id && !th) return;
+  var d = th || { date:todayStr(), title:'', servant:'', status:'جاهز ومؤكد' };
+  var sts=['جاهز ومؤكد','جاري التنسيق','طقسي واستثنائي'].map(function(s){ return '<option '+(d.status===s?'selected':'')+'>'+s+'</option>'; }).join('');
+  $('#modalRoot').innerHTML='<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal-box">' +
+    '<h3>'+(th?'✏️ تعديل لقاء الخميس':'➕ إضافة لقاء خميس')+'</h3><form id="thForm">' +
+    '<label>التاريخ<input type="date" name="date" required value="'+esc(d.date)+'"></label>' +
+    '<label>موضوع الكلمة الروحية<input name="title" required value="'+esc(d.title)+'"></label>' +
+    '<label>الخادم / المتكلم<input name="servant" required value="'+esc(d.servant)+'"></label>' +
+    '<label>الحالة<select name="status">'+sts+'</select></label>' +
+    '<div style="display:flex;gap:10px;margin-top:16px"><button type="submit" class="btn primary" style="flex:1">💾 حفظ</button>' +
+    (th ? '<button type="button" class="btn red" onclick="delThursday(\''+th.id+'\')">🗑️</button>' : '') +
+    '<button type="button" class="btn ghost" onclick="closeModal()">إلغاء</button></div></form></div></div>';
+  $('#thForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var key=th?th.id:newId('thursdays');
+    fdb.ref(ROOT+'thursdays/'+key).set({ date:this.date.value, title:this.title.value.trim(), servant:this.servant.value.trim(), status:this.status.value })
+      .then(function(){ toast('✅ تم الحفظ'); }).catch(function(er){ toast('❌ '+er.message); });
+    closeModal();
+  });
+}
+function delThursday(id){
+  if(!confirm('حذف هذا اللقاء؟')) return;
+  fdb.ref(ROOT+'thursdays/'+id).remove().then(function(){ toast('🗑️ تم الحذف'); }).catch(function(er){ toast('❌ '+er.message); });
+  closeModal();
+}
+
+/* ============ ✅ الحضور (للخدام فقط) ============ */
+function viewAttendance(v){
+  var mems=cache.members, date=state.attDate||todayStr(), saved=cache.attendance[date]||{};
+  var session='اجتماع الخميس - أسرة القديسة فيرينا';
+  Object.keys(saved).forEach(function(k){ if(saved[k].session) session=saved[k].session; });
+  var rows=mems.map(function(m){
+    var st=(saved[m.id]&&saved[m.id].status)||'present', pts=memberPoints(m.id);
+    var opt=function(val,txt){ return '<label class="'+val+(st===val?' on':'')+'"><input type="radio" name="att_'+m.id+'" value="'+val+'" '+(st===val?'checked':'')+'>'+txt+'</label>'; };
+    return '<div class="att-row" data-id="'+m.id+'"><div style="display:flex;align-items:center;gap:10px"><div class="avatar-placeholder">'+esc(initial(m.name))+'</div><div>' +
+      '<div style="font-weight:800">'+esc(m.name)+' <span class="points-badge '+(pts>=10?'red':pts>=5?'blue':'green')+'">'+pts+' نقطة</span></div>' +
+      '<div style="font-size:12px;color:#8683a3">'+esc(m.phone||'بدون هاتف')+' • أب الاعتراف: '+esc(m.confessionFather||'—')+'</div></div></div>' +
+      '<div class="att-opts">'+opt('present','✅ حاضر')+opt('late','⏰ تأخير')+opt('excused','🕐 إذن')+opt('absent','❌ غائب')+'</div></div>';
+  }).join('') || '<p style="text-align:center;padding:30px;color:#8683a3;font-weight:700">لا يوجد مخدومين بعد. أضف مخدومًا من قسم «المخدومين والافتقاد».</p>';
+  v.innerHTML = card('<h3>📋 تسجيل الحضور</h3>' +
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:10px">' +
+      '<label>تاريخ الجلسة<input type="date" id="attDate" value="'+esc(date)+'" onchange="state.attDate=this.value;render()"></label>' +
+      '<label>الاجتماع<input id="attSession" value="'+esc(session)+'"></label></div>' +
+    (Object.keys(saved).length ? '<div class="err" style="border-color:#d97706;background:#fef3c7;color:#92400e">ℹ️ يوجد سجل محفوظ لهذا التاريخ. الحفظ سيعدّله دون تكرار النقاط.</div>' : '') +
+    '<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap"><button class="btn small green" onclick="setAllAtt(\'present\')">✔️ الكل حاضر</button><button class="btn small red" onclick="setAllAtt(\'absent\')">✖️ الكل غائب</button></div>' +
+    '<div id="attList">'+rows+'</div>' + (mems.length ? '<button class="btn primary block" onclick="saveAttendance()">💾 حفظ واعتماد السجل</button>' : ''));
+  var list=$('#attList');
+  if(list) list.addEventListener('change', function(e){
+    var o=e.target.closest('.att-opts'); if(!o) return;
+    o.querySelectorAll('label').forEach(function(l){ l.classList.toggle('on', l.querySelector('input').checked); });
+  });
+}
+function setAllAtt(st){
+  document.querySelectorAll('.att-row').forEach(function(r){
+    var inp=r.querySelector('input[value="'+st+'"]'); if(inp){ inp.checked=true; inp.dispatchEvent(new Event('change',{bubbles:true})); }
+  });
+}
+function saveAttendance(){
+  var date=$('#attDate').value, session=$('#attSession').value.trim(), s=cache.settings, up={};
+  if(!date){ alert('اختر التاريخ'); return; }
+  cache.members.forEach(function(m){
+    var c=document.querySelector('input[name="att_'+m.id+'"]:checked'), st=c?c.value:'absent';
+    var pts = st==='present'?s.pPresent : st==='late'?s.pLate : st==='excused'?s.pExcused : s.pAbsent;
+    up['attendance/'+date+'/'+m.id]={ status:st, session:session, points:pts, time:TS };
+    up['points/'+m.id+'/att_'+date] = pts>0 ? { points:pts, reason:'حضور '+session+' ('+date+')', type:'attendance', date:TS } : null;
+  });
+  fdb.ref(ROOT).update(up).then(function(){ toast('✅ تم حفظ الحضور واحتساب النقاط'); state.attDate=null; go('points'); })
+    .catch(function(er){ alert('❌ فشل الحفظ: '+er.message); });
+}
+
+/* ============ 👥 المخدومين (للخدام فقط) ============ */
+function viewMembers(v){
+  var rows=cache.members.map(function(m,i){
+    var pts=memberPoints(m.id);
+    return '<tr><td>'+(i+1)+'</td><td><b>'+esc(m.name)+'</b></td><td>'+esc(m.phone||'—')+'</td><td>'+esc(m.confessionFather||'—')+'</td><td>'+esc(m.jobOrEdu||'—')+'</td>' +
+      '<td><span class="points-badge '+(pts>=10?'red':pts>=5?'blue':'green')+'">'+pts+' نقطة</span></td>' +
+      '<td><button class="btn small red" onclick="delMember(\''+m.id+'\')">🗑️ حذف</button></td></tr>';
+  }).join('') || '<tr><td colspan="7" style="text-align:center;padding:24px;color:#8683a3">لا توجد بيانات</td></tr>';
+  v.innerHTML = card('<h3>➕ إضافة مخدوم جديد</h3><form id="newMemberForm" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;align-items:end">' +
+      '<label>الاسم بالكامل *<input name="name" required></label><label>رقم الهاتف<input name="phone" placeholder="01xxxxxxxxx" inputmode="tel"></label>' +
+      '<label>أب الاعتراف<input name="confessionFather"></label><label>المرحلة / الوظيفة<input name="jobOrEdu"></label>' +
+      '<button type="submit" class="btn primary" style="height:46px">➕ إضافة</button></form>') +
+    card('<h3>👥 قائمة المخدومين ('+cache.members.length+')</h3><div class="table-wrap"><table><thead><tr><th>#</th><th>الاسم</th><th>الهاتف</th><th>أب الاعتراف</th><th>المرحلة/الوظيفة</th><th>النقاط</th><th>إجراء</th></tr></thead><tbody>'+rows+'</tbody></table></div>');
+  $('#newMemberForm').addEventListener('submit', function(e){
+    e.preventDefault(); var f=this;
+    fdb.ref(ROOT+'members/'+newId('members')).set({ name:f.name.value.trim(), phone:f.phone.value.trim(), confessionFather:f.confessionFather.value.trim(), jobOrEdu:f.jobOrEdu.value.trim(), role:'member', created:TS })
+      .then(function(){ toast('✅ تمت الإضافة'); }).catch(function(er){ toast('❌ '+er.message); });
+    f.reset();
+  });
+}
+function delMember(id){
+  var m=cache.members.filter(function(x){ return x.id===id; })[0]; if(!m) return;
+  if(!confirm('حذف «'+m.name+'» وكل سجلاته (حضور ونقاط)'+(m.userId?' وإيقاف حسابه':'')+'؟')) return;
+  var up={}; up['members/'+id]=null; up['points/'+id]=null;
+  Object.keys(cache.attendance).forEach(function(d){ if(cache.attendance[d] && cache.attendance[d][id]) up['attendance/'+d+'/'+id]=null; });
+  if(m.userId) up['users/'+m.userId+'/active']=false;
+  fdb.ref(ROOT).update(up).then(function(){ toast('🗑️ تم الحذف'); }).catch(function(er){ toast('❌ '+er.message); });
+}
+
+/* ============ ⭐ النقاط ============ */
+function viewPoints(v){
+  var staff=isStaff(), mems=cache.members;
+  if(!mems.length){ v.innerHTML=card('<p style="text-align:center;padding:30px;color:#8683a3">'+(staff?'أضف مخدومين أولًا لعرض شجرة النمو.':'لا يوجد سجل نقاط لحسابك بعد.')+'</p>'); return; }
+  var target;
+  if(staff){ target=mems.filter(function(m){ return m.id===state.pointMember; })[0]||mems[0]; state.pointMember=target.id; } else target=mems[0];
+  var pts=memberPoints(target.id);
+  var logs=toArr(cache.points[target.id]).sort(function(a,b){ return (b.date||0)-(a.date||0); }).slice(0,15);
+  var picker = staff ? card('<label>اختر المخدوم<select id="pointMemberSelect">'+mems.map(function(m){ return '<option value="'+m.id+'" '+(m.id===target.id?'selected':'')+'>'+esc(m.name)+'</option>'; }).join('')+'</select></label>') : '';
+  var grant = staff ? '<h4 style="margin:16px 0 8px;color:#5b21b6">🎁 منح نقاط تحفيزية:</h4><div class="point-action">' +
+    '<button class="green-btn" onclick="grantPts(\''+target.id+'\',3,\'أخضر 🟢\')"><span style="font-size:24px">🟢</span><span>+3 نقاط</span></button>' +
+    '<button class="blue-btn" onclick="grantPts(\''+target.id+'\',5,\'أزرق 🔵\')"><span style="font-size:24px">🔵</span><span>+5 نقاط</span></button>' +
+    '<button class="red-btn" onclick="grantPts(\''+target.id+'\',10,\'أحمر 🔴\')"><span style="font-size:24px">🔴</span><span>+10 نقاط</span></button></div>' : '';
+  var hist = logs.length ? '<div style="text-align:right;margin-top:14px"><h4 style="color:#5b21b6;margin-bottom:8px">🧾 آخر العمليات</h4>' + logs.map(function(l){
+    return '<div class="att-row" style="padding:8px 4px"><div><div style="font-weight:700;font-size:13px">'+esc(l.reason)+'</div><div style="font-size:11px;color:#8683a3">'+(l.date?fmtDate(l.date):'')+'</div></div><div><b>+'+esc(l.points)+'</b>' +
+      (staff ? ' <button class="btn small ghost" onclick="delLog(\''+target.id+'\',\''+l.id+'\')">✖</button>' : '') + '</div></div>'; }).join('') + '</div>' : '';
+  v.innerHTML = picker + card('<div style="text-align:center"><h3 style="justify-content:center;margin-bottom:4px">🌳 شجرة النمو الروحي: '+esc(target.name)+'</h3>' +
+    '<div class="tree-box"><div style="font-size:70px">🌳</div><div class="big-points">'+pts+'</div><div style="color:#6b6880;font-weight:700">إجمالي النقاط</div><div class="progress"><div style="width:'+Math.min(100,pts)+'%"></div></div></div>' +
+    grant + '</div>' + hist);
+  var sel=$('#pointMemberSelect'); if(sel) sel.addEventListener('change', function(){ state.pointMember=this.value; render(); });
+}
+function grantPts(id, amt, colorName){
+  fdb.ref(ROOT+'points/'+id+'/'+newId('points/'+id)).set({ points:amt, reason:'منح نقاط '+colorName+' بواسطة '+state.user.name, type:'grant', date:TS })
+    .then(function(){ toast('✅ تم منح '+amt+' نقطة'); }).catch(function(er){ toast('❌ '+er.message); });
+}
+function delLog(mid, key){
+  if(!confirm('حذف هذه العملية وخصم نقاطها؟')) return;
+  fdb.ref(ROOT+'points/'+mid+'/'+key).remove().catch(function(er){ toast('❌ '+er.message); });
+}
+
+/* ============ 🔔 الإشعارات ============ */
+var AUD={ all:'🌍 الجميع', servants:'🙋 الخدام فقط', members:'👥 المخدومين فقط' };
+function viewNotifications(v){
+  var list=visibleNotifs();
+  v.innerHTML = card('<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px"><h3 style="margin:0">🔔 سجل الإشعارات ('+list.length+')</h3>' +
+    (isStaff() ? '<button class="btn primary small" onclick="openSendNotifModal()">➕ إشعار جديد</button>' : '') + '</div>' +
+    (list.map(function(n){ return '<div class="notif"><h4>📢 '+esc(n.title)+'</h4><p>'+esc(n.body)+'</p><div style="font-size:12px;color:#8683a3;margin-top:6px">✍️ '+esc(n.author)+' • 🕒 '+(n.date?fmtDate(n.date):'')+' • '+esc(AUD[n.audience]||'')+
+      (isStaff() ? ' <button class="btn small ghost" style="margin-right:8px" onclick="delNotif(\''+n.id+'\')">🗑️</button>' : '')+'</div></div>'; }).join('') || '<p style="text-align:center;padding:24px;color:#8683a3">لا توجد إشعارات</p>'));
+  markSeen(); updateBell();
+}
+function openSendNotifModal(){
+  if(!isStaff()) return;
+  $('#modalRoot').innerHTML='<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal-box"><h3>📢 إرسال إشعار جديد</h3><form id="sendNotifForm">' +
+    '<label>العنوان *<input name="title" required maxlength="100"></label><label>النص *<textarea name="body" rows="4" required maxlength="1000"></textarea></label>' +
+    '<label>الجمهور<select name="audience">'+Object.keys(AUD).map(function(k){ return '<option value="'+k+'">'+AUD[k]+'</option>'; }).join('')+'</select></label>' +
+    '<div style="display:flex;gap:10px;margin-top:16px"><button type="submit" class="btn primary" style="flex:1">📢 إرسال</button><button type="button" class="btn ghost" onclick="closeModal()">إلغاء</button></div></form></div></div>';
+  $('#sendNotifForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    fdb.ref(ROOT+'notifs/'+newId('notifs')).set({ title:this.title.value.trim(), body:this.body.value.trim(), audience:this.audience.value, author:state.user.name, date:TS })
+      .then(function(){ toast('✅ تم إرسال الإشعار'); }).catch(function(er){ toast('❌ '+er.message); });
+    closeModal();
+  });
+}
+function delNotif(id){ if(confirm('حذف الإشعار؟')) fdb.ref(ROOT+'notifs/'+id).remove().catch(function(er){ toast('❌ '+er.message); }); }
+
+/* ============ ⚙️ الإدارة ============ */
+function viewAdmin(v){
+  var users=cache.users.slice().sort(function(a,b){ return (a.active===true)-(b.active===true) || String(a.name).localeCompare(String(b.name),'ar'); });
+  var rows=users.map(function(u){
+    var me=u.id===state.user.id;
+    var role = isAdmin() && !me ? '<select style="width:auto;padding:6px" onchange="setRole(\''+u.id+'\',this.value)">'+['member','leader','admin'].map(function(r){ return '<option value="'+r+'" '+(u.role===r?'selected':'')+'>'+roleLabel(r)+'</option>'; }).join('')+'</select>' : roleLabel(u.role);
+    return '<tr><td><b>'+esc(u.name)+'</b></td><td dir="ltr">'+esc(u.username)+'</td><td>'+role+'</td>' +
+      '<td>'+(u.active===true?'<span style="color:#059669;font-weight:700">✅ مفعل</span>':'<span style="color:#d97706;font-weight:700">⏳ بانتظار / موقوف</span>')+'</td>' +
+      '<td>'+(me?'—':'<button class="btn small '+(u.active===true?'ghost':'green')+'" onclick="toggleActive(\''+u.id+'\','+(u.active===true)+')">'+(u.active===true?'إيقاف':'تفعيل')+'</button>')+'</td></tr>';
+  }).join('');
+  v.innerHTML = card('<h3>👥 إدارة الحسابات</h3><div class="table-wrap"><table><thead><tr><th>الاسم</th><th>المستخدم</th><th>الرتبة</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody>'+rows+'</tbody></table></div>') +
+    card('<h3>🗄️ البيانات</h3><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn green" onclick="exportData()">⬇️ نسخة احتياطية (JSON)</button>' +
+      (isAdmin() ? '<button class="btn red" onclick="wipeData()">🗑️ تصفير السجلات</button>' : '') + '</div>');
+}
+function toggleActive(id, cur){
+  fdb.ref(ROOT+'users/'+id+'/active').set(!cur).then(function(){ toast('✅ تم تعديل الحالة'); }).catch(function(er){ toast('❌ '+er.message); });
+}
+function setRole(id, role){
+  fdb.ref(ROOT+'users/'+id+'/role').set(role).then(function(){ toast('✅ تم تغيير الرتبة'); }).catch(function(er){ toast('❌ '+er.message); });
+}
+function exportData(){
+  var dump={ members:cache.members, attendance:cache.attendance, points:cache.points, thursdays:cache.thursdays, notifs:cache.notifs, settings:cache.settings };
+  var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(dump,null,2)],{type:'application/json'}));
+  a.download='church_backup_'+todayStr()+'.json'; a.click();
+}
+function wipeData(){
+  if(!isAdmin()) return;
+  if(!confirm('⚠️ سيتم مسح الحضور والنقاط والإشعارات والمخدومين المضافين يدويًا (حسابات المسجلين ذاتيًا تبقى). متابعة؟')) return;
+  if(prompt('اكتب كلمة "تصفير" للتأكيد')!=='تصفير') return;
+  var up={ attendance:null, points:null, notifs:null };
+  cache.members.forEach(function(m){ if(!m.userId) up['members/'+m.id]=null; });
+  fdb.ref(ROOT).update(up).then(function(){ toast('🧹 تم التصفير'); }).catch(function(er){ toast('❌ '+er.message); });
+}
+
+boot();
+</script>
+</body>
+</html>
